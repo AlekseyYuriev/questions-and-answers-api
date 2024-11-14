@@ -10,3 +10,18 @@ services:
       - NODE_ENV=development
     volumes:
       - ./src:/app/src
+  postgres_db:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=questions_and_answers
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PORT=5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
