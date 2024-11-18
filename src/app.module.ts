@@ -3,26 +3,38 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { RedisModule } from '@nestjs-modules/ioredis'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'postgres_db',
-      port: 5432,
-      database: 'questions_and_answers',
-      entities: [],
-      username: 'postgres',
-      password: 'postgres',
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        entities: [],
+        autoLoadEntities: true,
+        synchronize: true,
+        port: +configService.get('DATABASE_PORT'),
+        username: configService.get('DATABASE_USER'),
+        password: configService.get('DATABASE_PASSWORD'),
+        host: configService.get('DATABASE_HOST'),
+        database: configService.get('DATABASE_NAME'),
+      }),
     }),
     RedisModule.forRootAsync({
-      useFactory: () => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         type: 'single',
-        url: 'cache',
-        host: 'cache',
-        port: 6379,
-        password: 'eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81',
+        url: configService.get('CACHE_URL'),
+        host: configService.get('CACHE_HOST'),
+        port: +configService.get('CACHE_PORT'),
+        password: configService.get('CACHE_PASSWORD'),
       }),
     }),
   ],

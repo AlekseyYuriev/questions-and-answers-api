@@ -3,33 +3,35 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - postgres_db
+      - cache
     ports:
-      - '3000:3000'
+      - '${API_PORT}:${API_PORT}'
     environment:
-      - PORT=3000
-      - NODE_ENV=development
+      - PORT=${API_PORT}
+      - NODE_ENV=${API_ENV}
     volumes:
       - ./src:/app/src
   postgres_db:
     image: postgres
     ports:
-      - '5432:5432'
+      - '${DATABASE_PORT}:${DATABASE_PORT}'
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=questions_and_answers
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_PORT=5432
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PORT=${DATABASE_PORT}
     volumes:
       - pgdata:/var/lib/postgresql/data
   cache:
     image: redis
     restart: always
     ports:
-      - '6379:6379'
+      - '${CACHE_PORT}:${CACHE_PORT}'
     environment:
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      - REDIS_PORT=${CACHE_PORT}
+      - REDIS_PASSWORD=${CACHE_PASSWORD}
     volumes:
       - cache:/data
 
