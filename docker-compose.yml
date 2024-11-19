@@ -16,7 +16,7 @@ services:
   postgres_db:
     image: postgres
     ports:
-      - '${DATABASE_PORT}:${DATABASE_PORT}'
+      - '${DATABASE_MAPPED_PORT}:${DATABASE_PORT}'
     environment:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
