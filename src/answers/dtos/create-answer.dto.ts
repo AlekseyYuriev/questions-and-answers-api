@@ -20,10 +20,8 @@ export class CreateAnswerDto {
   author: string
 
   @IsInt()
-  @IsOptional()
-  @Min(1)
-  @Max(5)
-  rating?: number
+  @Min(0)
+  rating: number
 
   @IsISO8601()
   createdAt: Date
