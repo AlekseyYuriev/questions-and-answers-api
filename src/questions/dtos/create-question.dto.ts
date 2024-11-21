@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  MaxLength,
   Min,
   MinLength,
 } from 'class-validator'
@@ -25,6 +26,7 @@ export class CreateQuestionDto {
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(96)
   author: string
 
   @ApiProperty({
@@ -33,6 +35,7 @@ export class CreateQuestionDto {
   })
   @IsString()
   @MinLength(4)
+  @MaxLength(512)
   @IsNotEmpty()
   title: string
 
