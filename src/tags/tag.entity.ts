@@ -21,31 +21,10 @@ export class Tag {
   name: string;
 
   @Column({
-    type: 'varchar',
-    length: 512,
-    nullable: false,
-    unique: true,
-  })
-  slug: string;
-
-  @Column({
     type: 'text',
     nullable: true,
   })
-  description: string;
-
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  schema: string;
-
-  @Column({
-    type: 'varchar',
-    length: 1024,
-    nullable: true,
-  })
-  featuredImageUrl: string;
+  description?: string;
 
   @CreateDateColumn()
   createDate: Date;
