@@ -1,0 +1,7 @@
+PATCH http://localhost:3000/questions
+Content-Type: application/json
+
+{
+  "id": 1234,
+  "title": "New question for test"
+}

@@ -1,0 +1,7 @@
+PATCH http://localhost:3000/answers
+Content-Type: application/json
+
+{
+  "id": 1234,
+  "text": "This is the best answer for test"
+}
