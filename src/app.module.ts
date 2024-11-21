@@ -5,8 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { RedisModule } from '@nestjs-modules/ioredis'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { UsersModule } from './users/users.module'
-import { QuestionsModule } from './questions/questions.module';
-import { AnswersModule } from './answers/answers.module';
+import { QuestionsModule } from './questions/questions.module'
+import { AnswersModule } from './answers/answers.module'
+import { User } from './users/user.entity'
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AnswersModule } from './answers/answers.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        entities: [],
+        entities: [User],
         autoLoadEntities: true,
         synchronize: true,
         port: +configService.get('DATABASE_PORT'),
