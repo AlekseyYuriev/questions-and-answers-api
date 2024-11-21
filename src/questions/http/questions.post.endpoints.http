@@ -6,7 +6,7 @@ Content-Type: application/json
   "author": "John",
   "title": "New question",
   "description": "Question description",
-  "tags": ["nestjs", "docker", "swagger"],
+  // "tags": ["nestjs", "docker", "swagger"],
   "createdAt": "2024-11-20T14:20:41.117Z",
   "updatedAt": "2024-11-20T14:20:41.117Z"
 }

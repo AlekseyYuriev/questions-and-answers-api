@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common'
-import { UsersService } from 'src/users/providers/users.service'
-import { CreateQuestionDto } from '../dtos/create-question.dto'
+import { Body, Injectable } from '@nestjs/common';
+import { UsersService } from 'src/users/providers/users.service';
+import { CreateQuestionDto } from '../dtos/create-question.dto';
+import { Repository } from 'typeorm';
+import { Question } from '../question.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class QuestionsService {
@@ -8,12 +11,24 @@ export class QuestionsService {
     /*
      * Inject Users Service
      */
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    /**
+     * Inject questionsRepository
+     */
+    @InjectRepository(Question)
+    private readonly questionsRepository: Repository<Question>
   ) {}
 
-  public createQuestion(createQuestionDto: CreateQuestionDto) {
-    console.log(createQuestionDto)
+  /**
+   * Creating new questions
+   */
+  public async createQuestion(@Body() createQuestionDto: CreateQuestionDto) {
+    let question = this.questionsRepository.create(createQuestionDto);
 
-    return 'Question created'
+    return await this.questionsRepository.save(question);
+  }
+
+  public async getAllQuestions() {
+    return await this.questionsRepository.find();
   }
 }

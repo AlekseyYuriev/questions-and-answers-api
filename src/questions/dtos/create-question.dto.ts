@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsInt,
@@ -9,7 +9,7 @@ import {
   MaxLength,
   Min,
   MinLength,
-} from 'class-validator'
+} from 'class-validator';
 
 export class CreateQuestionDto {
   @ApiProperty({
@@ -18,7 +18,7 @@ export class CreateQuestionDto {
   })
   @IsInt()
   @Min(0)
-  rating: number
+  rating: number;
 
   @ApiProperty({
     description: "That's the name of the author of the question",
@@ -27,7 +27,7 @@ export class CreateQuestionDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(96)
-  author: string
+  author: string;
 
   @ApiProperty({
     description: "That's the title of the question",
@@ -37,7 +37,7 @@ export class CreateQuestionDto {
   @MinLength(4)
   @MaxLength(512)
   @IsNotEmpty()
-  title: string
+  title: string;
 
   @ApiProperty({
     description: "That's the description of the question",
@@ -47,7 +47,21 @@ export class CreateQuestionDto {
   @IsString()
   @MinLength(8)
   @IsNotEmpty()
-  description: string
+  description: string;
+
+  @ApiProperty({
+    description: 'The date on which the question is published',
+    example: '2024-11-20T14:20:41.117Z',
+  })
+  @IsISO8601()
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'The date on which the question is updated',
+    example: '2024-11-20T14:20:41.117Z',
+  })
+  @IsISO8601()
+  updatedAt: Date;
 
   @ApiPropertyOptional({
     description: 'Array of tags passed as string values',
@@ -57,19 +71,5 @@ export class CreateQuestionDto {
   @IsArray()
   @IsString({ each: true })
   @MinLength(3, { each: true })
-  tags?: string[]
-
-  @ApiProperty({
-    description: 'The date on which the question is published',
-    example: '2024-11-20T14:20:41.117Z',
-  })
-  @IsISO8601()
-  createdAt: Date
-
-  @ApiProperty({
-    description: 'The date on which the question is updated',
-    example: '2024-11-20T14:20:41.117Z',
-  })
-  @IsISO8601()
-  updatedAt: Date
+  tags?: string[];
 }

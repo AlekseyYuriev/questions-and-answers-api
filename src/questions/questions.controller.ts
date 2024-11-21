@@ -1,8 +1,8 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common'
-import { QuestionsService } from './providers/questions.service'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { CreateQuestionDto } from './dtos/create-question.dto'
-import { PatchQuestionDto } from './dtos/patch-question.dto'
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { QuestionsService } from './providers/questions.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateQuestionDto } from './dtos/create-question.dto';
+import { PatchQuestionDto } from './dtos/patch-question.dto';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -24,7 +24,7 @@ export class QuestionsController {
   })
   @Post()
   public createQuestion(@Body() createQuestionDto: CreateQuestionDto) {
-    return this.questionsService.createQuestion(createQuestionDto)
+    return this.questionsService.createQuestion(createQuestionDto);
   }
 
   @ApiOperation({
@@ -36,6 +36,11 @@ export class QuestionsController {
   })
   @Patch()
   public updateQuestion(@Body() patchPostsDto: PatchQuestionDto) {
-    console.log(patchPostsDto)
+    console.log(patchPostsDto);
+  }
+
+  @Get()
+  public getAllQuestions() {
+    return this.questionsService.getAllQuestions();
   }
 }
