@@ -1,9 +1,22 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Question {
+export class Answer {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    type: 'text',
+    nullable: false,
+  })
+  text: string;
+
+  @Column({
+    type: 'varchar',
+    length: 256,
+    nullable: false,
+  })
+  author: string;
 
   @Column({
     type: 'int',
@@ -11,28 +24,6 @@ export class Question {
     nullable: false,
   })
   rating: number;
-
-  @Column({
-    type: 'varchar',
-    length: 96,
-    nullable: false,
-  })
-  author: string;
-
-  @Column({
-    type: 'varchar',
-    length: 512,
-    nullable: false,
-  })
-  title: string;
-
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  description: string;
-
-  tags?: string[];
 
   @Column({
     type: 'timestamp',

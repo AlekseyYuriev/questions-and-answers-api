@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { RedisModule } from '@nestjs-modules/ioredis'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { UsersModule } from './users/users.module'
-import { QuestionsModule } from './questions/questions.module'
-import { AnswersModule } from './answers/answers.module'
-import { User } from './users/user.entity'
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
+import { QuestionsModule } from './questions/questions.module';
+import { AnswersModule } from './answers/answers.module';
+import { User } from './users/user.entity';
 import { TagsModule } from './tags/tags.module';
 
 @Module({
@@ -21,7 +21,7 @@ import { TagsModule } from './tags/tags.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        entities: [User],
+        // entities: [],
         autoLoadEntities: true,
         synchronize: true,
         port: +configService.get('DATABASE_PORT'),
