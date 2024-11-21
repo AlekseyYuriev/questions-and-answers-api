@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module'
 import { QuestionsModule } from './questions/questions.module'
 import { AnswersModule } from './answers/answers.module'
 import { User } from './users/user.entity'
+import { TagsModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { User } from './users/user.entity'
     UsersModule,
     QuestionsModule,
     AnswersModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
