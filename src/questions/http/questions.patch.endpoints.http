@@ -2,7 +2,7 @@ PATCH http://localhost:3000/questions
 Content-Type: application/json
 
 {
-  "id": 4,
+  "id": 6,
   "title": "What's new with NestJS With TypeScript",
-  "tags": [1,2]
+  "tags": [1,3]
 }

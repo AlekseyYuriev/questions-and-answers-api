@@ -3,11 +3,11 @@ Content-Type: application/json
 
 {
   "rating": 0,
-  "title": "New question 3",
+  "title": "New question 5",
   "description": "Question description for test",
   // "tags": ["nestjs", "docker", "swagger"],
   "createdAt": "2024-11-20T14:20:41.117Z",
   "updatedAt": "2024-11-20T14:20:41.117Z",
   "authorId": 1,
-  "tags": [1]
+  "tags": [1,2]
 }

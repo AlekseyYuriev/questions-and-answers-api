@@ -56,7 +56,7 @@ export class Question {
   @OneToMany(() => Answer, (answer) => answer.question)
   answers: Answer[];
 
-  @ManyToMany(() => Tag)
+  @ManyToMany(() => Tag, (tag) => tag.questions)
   @JoinTable()
   tags?: Tag[];
 }

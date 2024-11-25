@@ -1,8 +1,10 @@
+import { Question } from 'src/questions/question.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,6 +27,11 @@ export class Tag {
     nullable: true,
   })
   description?: string;
+
+  @ManyToMany(() => Question, (question) => question.tags, {
+    onDelete: 'CASCADE',
+  })
+  questions: Question[];
 
   @CreateDateColumn()
   createDate: Date;

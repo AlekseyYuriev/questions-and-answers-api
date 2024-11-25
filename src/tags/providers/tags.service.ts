@@ -35,4 +35,22 @@ export class TagsService {
 
     return results;
   }
+
+  /**
+   * The method to delete an existing tag
+   */
+  public async delete(id: number) {
+    await this.tagsRepository.delete(id);
+
+    return { deleted: true, id };
+  }
+
+  /**
+   * The method to soft remove an existing tag
+   */
+  public async softRemove(id: number) {
+    await this.tagsRepository.softDelete(id);
+
+    return { deleted: true, id };
+  }
 }
