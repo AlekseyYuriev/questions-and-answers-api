@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -79,5 +80,10 @@ export class QuestionsController {
   @Patch()
   public updateQuestion(@Body() patchQuestionDto: PatchQuestionDto) {
     return this.questionsService.update(patchQuestionDto);
+  }
+
+  @Delete()
+  public deleteQuestion(@Query('id', ParseIntPipe) id: number) {
+    return this.questionsService.delete(id);
   }
 }

@@ -97,4 +97,13 @@ export class QuestionsService {
     // Save the question and return
     return await this.questionsRepository.save(question);
   }
+
+  /**
+   * Delete an existing question
+   */
+  public async delete(id: number) {
+    await this.questionsRepository.delete(id);
+
+    return { deleted: true, id };
+  }
 }
