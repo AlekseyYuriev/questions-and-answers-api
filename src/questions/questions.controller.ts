@@ -35,19 +35,7 @@ export class QuestionsController {
   })
   @Post()
   public createQuestion(@Body() createQuestionDto: CreateQuestionDto) {
-    return this.questionsService.createQuestion(createQuestionDto);
-  }
-
-  @ApiOperation({
-    summary: 'Updates an existing question',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'A 200 response if the question is updated successfully',
-  })
-  @Patch()
-  public updateQuestion(@Body() patchPostsDto: PatchQuestionDto) {
-    console.log(patchPostsDto);
+    return this.questionsService.create(createQuestionDto);
   }
 
   @Get('/:id?')
@@ -73,11 +61,23 @@ export class QuestionsController {
       'The position of the page number that you want the API to return',
     example: 1,
   })
-  public getUsers(
+  public getQuestions(
     @Param() getQuestionsParamDto: GetQuestionsParamDto,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number
   ) {
     return this.questionsService.findAll(getQuestionsParamDto, limit, page);
+  }
+
+  @ApiOperation({
+    summary: 'Updates an existing question',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A 200 response if the question is updated successfully',
+  })
+  @Patch()
+  public updateQuestion(@Body() patchQuestionDto: PatchQuestionDto) {
+    return this.questionsService.update(patchQuestionDto);
   }
 }

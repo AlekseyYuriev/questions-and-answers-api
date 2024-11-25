@@ -6,6 +6,7 @@ import { Question } from '../question.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GetQuestionsParamDto } from '../dtos/get-questions-param.dto';
 import { TagsService } from 'src/tags/providers/tags.service';
+import { PatchQuestionDto } from '../dtos/patch-question.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -30,7 +31,7 @@ export class QuestionsService {
   /**
    * Creating new questions
    */
-  public async createQuestion(@Body() createQuestionDto: CreateQuestionDto) {
+  public async create(@Body() createQuestionDto: CreateQuestionDto) {
     let author = await this.usersService.findOneById(
       createQuestionDto.authorId
     );
@@ -69,5 +70,31 @@ export class QuestionsService {
     return await this.questionsRepository.findOneBy({
       id,
     });
+  }
+
+  /**
+   * Update an existing questions
+   */
+  public async update(patchQuestionDto: PatchQuestionDto) {
+    // Find the Tags
+    let tags = await this.tagsService.findMultipleTags(patchQuestionDto.tags);
+
+    // Find the Question
+    let question = await this.questionsRepository.findOneBy({
+      id: patchQuestionDto.id,
+    });
+
+    // Update the properties
+    question.title = patchQuestionDto.title ?? question.title;
+    question.rating = patchQuestionDto.rating ?? question.rating;
+    question.description = patchQuestionDto.description ?? question.description;
+    question.createdAt = patchQuestionDto.createdAt ?? question.createdAt;
+    question.updatedAt = patchQuestionDto.updatedAt ?? question.updatedAt;
+
+    // Assign the new tags
+    question.tags = tags;
+
+    // Save the question and return
+    return await this.questionsRepository.save(question);
   }
 }
