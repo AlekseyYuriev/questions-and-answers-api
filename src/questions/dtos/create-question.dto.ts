@@ -21,15 +21,6 @@ export class CreateQuestionDto {
   rating: number;
 
   @ApiProperty({
-    description: "That's the name of the author of the question",
-    example: 'John',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(96)
-  author: string;
-
-  @ApiProperty({
     description: "That's the title of the question",
     example: 'How to dockerize Redis in NestJS app?',
   })
@@ -72,4 +63,23 @@ export class CreateQuestionDto {
   @IsString({ each: true })
   @MinLength(3, { each: true })
   tags?: string[];
+
+  // @ApiProperty({
+  //   description: "That's the name of the author of the question",
+  //   example: 'John',
+  // })
+  // @IsString()
+  // @IsNotEmpty()
+  // @MaxLength(96)
+  // author: string;
+
+  @ApiProperty({
+    type: 'integer',
+    required: true,
+    description: "That's the ID of the author of the question",
+    example: 1,
+  })
+  @IsNotEmpty()
+  @IsInt()
+  authorId: number;
 }

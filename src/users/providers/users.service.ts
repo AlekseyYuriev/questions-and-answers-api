@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common'
-import { GetUsersParamDto } from '../dtos/get-users-param.dto'
-import { Repository } from 'typeorm'
-import { User } from '../user.entity'
-import { InjectRepository } from '@nestjs/typeorm'
-import { CreateUserDto } from '../dtos/create-user.dto'
+import { Injectable } from '@nestjs/common';
+import { GetUsersParamDto } from '../dtos/get-users-param.dto';
+import { Repository } from 'typeorm';
+import { User } from '../user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from '../dtos/create-user.dto';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -21,12 +21,12 @@ export class UsersService {
   public async createUser(createUserDto: CreateUserDto) {
     const existingUser = await this.usersRepository.findOne({
       where: { email: createUserDto.email },
-    })
+    });
 
-    let newUser = this.usersRepository.create(createUserDto)
-    newUser = await this.usersRepository.save(newUser)
+    let newUser = this.usersRepository.create(createUserDto);
+    newUser = await this.usersRepository.save(newUser);
 
-    return newUser
+    return newUser;
   }
 
   /**
@@ -46,17 +46,15 @@ export class UsersService {
         firstName: 'Alice',
         email: 'alice@doe.com',
       },
-    ]
+    ];
   }
 
   /**
    * Find a single user using the ID of the user
    */
-  public findOneById(id: number) {
-    return {
-      id: 1234,
-      firstName: 'Alice',
-      email: 'alice@doe.com',
-    }
+  public async findOneById(id: number) {
+    return await this.usersRepository.findOneBy({
+      id,
+    });
   }
 }

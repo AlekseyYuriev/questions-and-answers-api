@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Question {
@@ -14,13 +15,6 @@ export class Question {
 
   @Column({
     type: 'varchar',
-    length: 96,
-    nullable: false,
-  })
-  author: string;
-
-  @Column({
-    type: 'varchar',
     length: 512,
     nullable: false,
   })
@@ -31,8 +25,6 @@ export class Question {
     nullable: false,
   })
   description: string;
-
-  tags?: string[];
 
   @Column({
     type: 'timestamp',
@@ -45,4 +37,18 @@ export class Question {
     nullable: false,
   })
   updatedAt: Date;
+
+  // @Column({
+  //   type: 'varchar',
+  //   length: 96,
+  //   nullable: false,
+  // })
+  // author: string;
+
+  @ManyToOne(() => User, (user) => user.questions, {
+    eager: true,
+  })
+  author: User;
+
+  tags?: string[];
 }

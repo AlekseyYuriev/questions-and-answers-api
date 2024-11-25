@@ -1,23 +1,24 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Question } from 'src/questions/question.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number
+  id: number;
 
   @Column({
     type: 'varchar',
     length: 96,
     nullable: false,
   })
-  firstName: string
+  firstName: string;
 
   @Column({
     type: 'varchar',
     length: 96,
     nullable: true,
   })
-  lastName: string
+  lastName: string;
 
   @Column({
     type: 'varchar',
@@ -25,12 +26,15 @@ export class User {
     nullable: false,
     unique: true,
   })
-  email: string
+  email: string;
 
   @Column({
     type: 'varchar',
     length: 96,
     nullable: false,
   })
-  password: string
+  password: string;
+
+  @OneToMany(() => Question, (question) => question.author)
+  questions: Question[];
 }

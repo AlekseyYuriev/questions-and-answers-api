@@ -23,12 +23,20 @@ export class QuestionsService {
    * Creating new questions
    */
   public async createQuestion(@Body() createQuestionDto: CreateQuestionDto) {
-    let question = this.questionsRepository.create(createQuestionDto);
+    let author = await this.usersService.findOneById(
+      createQuestionDto.authorId
+    );
+
+    let question = this.questionsRepository.create({
+      ...createQuestionDto,
+      author: author,
+    });
 
     return await this.questionsRepository.save(question);
   }
 
   public async getAllQuestions() {
-    return await this.questionsRepository.find();
+    let questions = await this.questionsRepository.find();
+    return questions;
   }
 }
