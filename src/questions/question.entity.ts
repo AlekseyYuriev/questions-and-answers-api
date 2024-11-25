@@ -1,8 +1,11 @@
 import { Answer } from 'src/answers/answer.entity';
+import { Tag } from 'src/tags/tag.entity';
 import { User } from 'src/users/user.entity';
 import {
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -53,5 +56,7 @@ export class Question {
   @OneToMany(() => Answer, (answer) => answer.question)
   answers: Answer[];
 
-  tags?: string[];
+  @ManyToMany(() => Tag)
+  @JoinTable()
+  tags?: Tag[];
 }

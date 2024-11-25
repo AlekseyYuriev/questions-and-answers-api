@@ -55,14 +55,13 @@ export class CreateQuestionDto {
   updatedAt: Date;
 
   @ApiPropertyOptional({
-    description: 'Array of tags passed as string values',
-    example: ['nestjs', 'docker', 'redis'],
+    description: 'Array of ids of tags',
+    example: [1, 2],
   })
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  @MinLength(3, { each: true })
-  tags?: string[];
+  @IsInt({ each: true })
+  tags?: number[];
 
   @ApiProperty({
     type: 'integer',

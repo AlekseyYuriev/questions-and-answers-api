@@ -4,11 +4,12 @@ import { QuestionsService } from './providers/questions.service';
 import { UsersModule } from 'src/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Question } from './question.entity';
+import { TagsModule } from 'src/tags/tags.module';
 
 @Module({
   controllers: [QuestionsController],
   providers: [QuestionsService],
   exports: [QuestionsService],
-  imports: [UsersModule, TypeOrmModule.forFeature([Question])],
+  imports: [UsersModule, TagsModule, TypeOrmModule.forFeature([Question])],
 })
 export class QuestionsModule {}
