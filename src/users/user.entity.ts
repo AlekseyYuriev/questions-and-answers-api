@@ -1,3 +1,4 @@
+import { Answer } from 'src/answers/answer.entity';
 import { Question } from 'src/questions/question.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -37,4 +38,7 @@ export class User {
 
   @OneToMany(() => Question, (question) => question.author)
   questions: Question[];
+
+  @OneToMany(() => Answer, (answer) => answer.author)
+  answers: Answer[];
 }

@@ -64,15 +64,6 @@ export class CreateQuestionDto {
   @MinLength(3, { each: true })
   tags?: string[];
 
-  // @ApiProperty({
-  //   description: "That's the name of the author of the question",
-  //   example: 'John',
-  // })
-  // @IsString()
-  // @IsNotEmpty()
-  // @MaxLength(96)
-  // author: string;
-
   @ApiProperty({
     type: 'integer',
     required: true,

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Answer {
@@ -10,13 +11,6 @@ export class Answer {
     nullable: false,
   })
   text: string;
-
-  @Column({
-    type: 'varchar',
-    length: 256,
-    nullable: false,
-  })
-  author: string;
 
   @Column({
     type: 'int',
@@ -36,4 +30,9 @@ export class Answer {
     nullable: false,
   })
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.answers, {
+    eager: true,
+  })
+  author: User;
 }

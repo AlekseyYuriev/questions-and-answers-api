@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsInt,
   IsISO8601,
@@ -6,7 +6,7 @@ import {
   IsString,
   Min,
   MinLength,
-} from 'class-validator'
+} from 'class-validator';
 
 export class CreateAnswerDto {
   @ApiProperty({
@@ -16,15 +16,7 @@ export class CreateAnswerDto {
   @IsString()
   @MinLength(4)
   @IsNotEmpty()
-  text: string
-
-  @ApiProperty({
-    description: "That's the name of the author of the answer",
-    example: 'Alice',
-  })
-  @IsString()
-  @IsNotEmpty()
-  author: string
+  text: string;
 
   @ApiProperty({
     description: 'This is rating for the answer',
@@ -32,19 +24,29 @@ export class CreateAnswerDto {
   })
   @IsInt()
   @Min(0)
-  rating: number
+  rating: number;
 
   @ApiProperty({
     description: 'The date on which the answer is published',
     example: '2024-11-20T14:20:41.117Z',
   })
   @IsISO8601()
-  createdAt: Date
+  createdAt: Date;
 
   @ApiProperty({
     description: 'The date on which the answer is updated',
     example: '2024-11-20T14:20:41.117Z',
   })
   @IsISO8601()
-  updatedAt: Date
+  updatedAt: Date;
+
+  @ApiProperty({
+    type: 'integer',
+    required: true,
+    description: "That's the ID of the author of the answer",
+    example: 1,
+  })
+  @IsNotEmpty()
+  @IsInt()
+  authorId: number;
 }

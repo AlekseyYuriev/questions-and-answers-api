@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common'
-import { UsersService } from 'src/users/providers/users.service'
-import { CreateAnswerDto } from '../dtos/create-answer.dto'
+import { Body, Injectable } from '@nestjs/common';
+import { UsersService } from 'src/users/providers/users.service';
+import { CreateAnswerDto } from '../dtos/create-answer.dto';
 
 @Injectable()
 export class AnswersService {
@@ -11,9 +11,12 @@ export class AnswersService {
     private readonly usersService: UsersService
   ) {}
 
-  public createAnswer(CreateAnswerDto: CreateAnswerDto) {
-    console.log(CreateAnswerDto)
+  /**
+   * Creating new answers
+   */
+  public createAnswer(@Body() createAnswerDto: CreateAnswerDto) {
+    console.log(createAnswerDto);
 
-    return 'Answer created'
+    return 'Answer created';
   }
 }

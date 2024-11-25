@@ -38,13 +38,6 @@ export class Question {
   })
   updatedAt: Date;
 
-  // @Column({
-  //   type: 'varchar',
-  //   length: 96,
-  //   nullable: false,
-  // })
-  // author: string;
-
   @ManyToOne(() => User, (user) => user.questions, {
     eager: true,
   })
