@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { QuestionsService } from './providers/questions.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { PatchQuestionDto } from './dtos/patch-question.dto';
+import { GetQuestionsParamDto } from './dtos/get-questions-param.dto';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -39,8 +50,34 @@ export class QuestionsController {
     console.log(patchPostsDto);
   }
 
-  @Get()
-  public getAllQuestions() {
-    return this.questionsService.getAllQuestions();
+  @Get('/:id?')
+  @ApiOperation({
+    summary: 'Fetches a list of published questions on the application',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Questions fetched successfully based on the query',
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+    description: 'The number of entries returned per query',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+    description:
+      'The position of the page number that you want the API to return',
+    example: 1,
+  })
+  public getUsers(
+    @Param() getQuestionsParamDto: GetQuestionsParamDto,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number
+  ) {
+    return this.questionsService.findAll(getQuestionsParamDto, limit, page);
   }
 }

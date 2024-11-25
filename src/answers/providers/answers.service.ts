@@ -1,6 +1,10 @@
 import { Body, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { CreateAnswerDto } from '../dtos/create-answer.dto';
+import { QuestionsService } from 'src/questions/providers/questions.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Answer } from '../answer.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AnswersService {
@@ -8,15 +12,36 @@ export class AnswersService {
     /*
      * Inject Users Service
      */
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+
+    /*
+     * Inject Questions Service
+     */
+    private readonly questionsService: QuestionsService,
+
+    /**
+     * Inject answersRepository
+     */
+    @InjectRepository(Answer)
+    private readonly answersRepository: Repository<Answer>
   ) {}
 
   /**
    * Creating new answers
    */
-  public createAnswer(@Body() createAnswerDto: CreateAnswerDto) {
-    console.log(createAnswerDto);
+  public async createAnswer(@Body() createAnswerDto: CreateAnswerDto) {
+    let author = await this.usersService.findOneById(createAnswerDto.authorId);
 
-    return 'Answer created';
+    let question = await this.questionsService.findOneById(
+      createAnswerDto.questionId
+    );
+
+    let answer = this.answersRepository.create({
+      ...createAnswerDto,
+      author: author,
+      question: question,
+    });
+
+    return await this.answersRepository.save(answer);
   }
 }

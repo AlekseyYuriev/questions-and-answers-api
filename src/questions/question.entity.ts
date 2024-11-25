@@ -1,5 +1,12 @@
+import { Answer } from 'src/answers/answer.entity';
 import { User } from 'src/users/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Question {
@@ -42,6 +49,9 @@ export class Question {
     eager: true,
   })
   author: User;
+
+  @OneToMany(() => Answer, (answer) => answer.question)
+  answers: Answer[];
 
   tags?: string[];
 }

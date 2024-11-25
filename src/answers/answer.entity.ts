@@ -1,3 +1,4 @@
+import { Question } from 'src/questions/question.entity';
 import { User } from 'src/users/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -35,4 +36,7 @@ export class Answer {
     eager: true,
   })
   author: User;
+
+  @ManyToOne(() => Question, (question) => question.answers)
+  question: Question;
 }

@@ -49,4 +49,15 @@ export class CreateAnswerDto {
   @IsNotEmpty()
   @IsInt()
   authorId: number;
+
+  @ApiProperty({
+    type: 'integer',
+    required: true,
+    description:
+      "That's the ID of the question to which the answer is published",
+    example: 1,
+  })
+  @IsNotEmpty()
+  @IsInt()
+  questionId: number;
 }

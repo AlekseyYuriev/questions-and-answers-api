@@ -4,6 +4,7 @@ import { CreateQuestionDto } from '../dtos/create-question.dto';
 import { Repository } from 'typeorm';
 import { Question } from '../question.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GetQuestionsParamDto } from '../dtos/get-questions-param.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -35,8 +36,24 @@ export class QuestionsService {
     return await this.questionsRepository.save(question);
   }
 
-  public async getAllQuestions() {
+  /**
+   * The method to get all the questions from the database
+   */
+  public async findAll(
+    getQuestionsParamDto: GetQuestionsParamDto,
+    limit: number,
+    page: number
+  ) {
     let questions = await this.questionsRepository.find();
     return questions;
+  }
+
+  /**
+   * Find a single question using the ID of the question
+   */
+  public async findOneById(id: number) {
+    return await this.questionsRepository.findOneBy({
+      id,
+    });
   }
 }
