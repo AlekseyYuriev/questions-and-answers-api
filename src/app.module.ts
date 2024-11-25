@@ -7,7 +7,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { QuestionsModule } from './questions/questions.module';
 import { AnswersModule } from './answers/answers.module';
-import { User } from './users/user.entity';
 import { TagsModule } from './tags/tags.module';
 
 @Module({
@@ -21,9 +20,8 @@ import { TagsModule } from './tags/tags.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        // entities: [],
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
         port: +configService.get('DATABASE_PORT'),
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
@@ -51,3 +49,5 @@ import { TagsModule } from './tags/tags.module';
   providers: [AppService],
 })
 export class AppModule {}
+
+// docker-compose exec nestjs_api sh
