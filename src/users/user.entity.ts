@@ -1,6 +1,13 @@
 import { Answer } from 'src/answers/answer.entity';
 import { Question } from 'src/questions/question.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Role } from 'src/roles/role.entity';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -41,4 +48,9 @@ export class User {
 
   @OneToMany(() => Answer, (answer) => answer.author)
   answers: Answer[];
+
+  @ManyToMany(() => Role, (role) => role.users, {
+    onDelete: 'CASCADE',
+  })
+  roles: Role[];
 }

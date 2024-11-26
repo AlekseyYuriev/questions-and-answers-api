@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { QuestionsModule } from './questions/questions.module';
 import { AnswersModule } from './answers/answers.module';
 import { TagsModule } from './tags/tags.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { TagsModule } from './tags/tags.module';
     QuestionsModule,
     AnswersModule,
     TagsModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
