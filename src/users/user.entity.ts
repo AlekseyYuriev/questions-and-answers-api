@@ -4,7 +4,7 @@ import { Role } from 'src/roles/role.entity';
 import {
   Column,
   Entity,
-  ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -49,8 +49,8 @@ export class User {
   @OneToMany(() => Answer, (answer) => answer.author)
   answers: Answer[];
 
-  @ManyToMany(() => Role, (role) => role.users, {
-    onDelete: 'CASCADE',
+  @ManyToOne(() => Role, (role) => role.users, {
+    eager: true,
   })
-  roles: Role[];
+  role: Role;
 }

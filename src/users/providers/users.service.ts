@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { RolesService } from 'src/roles/providers/roles.service';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -11,6 +12,11 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 @Injectable()
 export class UsersService {
   constructor(
+    /**
+     * Inject RolesService
+     */
+    private readonly rolesService: RolesService,
+
     /**
      * Injecting usersRepository
      */
@@ -26,30 +32,35 @@ export class UsersService {
       where: { email: createUserDto.email },
     });
 
-    let newUser = this.usersRepository.create(createUserDto);
-    newUser = await this.usersRepository.save(newUser);
+    const role = await this.rolesService.getRoleByValue('USER');
 
-    return newUser;
+    const newUser = this.usersRepository.create({
+      ...createUserDto,
+      role: role,
+    });
+
+    return await this.usersRepository.save(newUser);
   }
 
   /**
    * The method to get all the users from the database
    */
-  public findAll(
+  public async findAll(
     getUserParamDto: GetUsersParamDto,
     limit: number,
     page: number
   ) {
-    return [
-      {
-        firstName: 'John',
-        email: 'john@doe.com',
-      },
-      {
-        firstName: 'Alice',
-        email: 'alice@doe.com',
-      },
-    ];
+    // return [
+    //   {
+    //     firstName: 'John',
+    //     email: 'john@doe.com',
+    //   },
+    //   {
+    //     firstName: 'Alice',
+    //     email: 'alice@doe.com',
+    //   },
+    // ];
+    return await this.usersRepository.find();
   }
 
   /**
