@@ -33,8 +33,9 @@ export class UsersService {
   /**
    * Public method responsible for creating a new user
    */
-  public async createUser(createUserDto: CreateUserDto) {
+  public async createUser(createUserDto: CreateUserDto): Promise<User> {
     let existingUser = undefined;
+    let role = undefined;
 
     try {
       existingUser = await this.usersRepository.findOne({
@@ -55,7 +56,20 @@ export class UsersService {
       );
     }
 
-    const role = await this.rolesService.getRoleByValue('USER');
+    try {
+      role = await this.rolesService.getRoleByValue('USER');
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database',
+        }
+      );
+    }
+
+    if (!role) {
+      throw new BadRequestException('The role does not exist.');
+    }
 
     let newUser = this.usersRepository.create({
       ...createUserDto,
@@ -83,7 +97,7 @@ export class UsersService {
     getUserParamDto: GetUsersParamDto,
     limit: number,
     page: number
-  ) {
+  ): Promise<HttpException> {
     throw new HttpException(
       {
         status: HttpStatus.MOVED_PERMANENTLY,
@@ -102,7 +116,7 @@ export class UsersService {
   /**
    * Public method used to find one user using the ID of the user
    */
-  public async findOneById(id: number) {
+  public async findOneById(id: number): Promise<User> {
     let user = undefined;
 
     try {

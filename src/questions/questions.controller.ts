@@ -15,6 +15,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { PatchQuestionDto } from './dtos/patch-question.dto';
 import { GetQuestionsParamDto } from './dtos/get-questions-param.dto';
+import { Question } from './question.entity';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -26,6 +27,7 @@ export class QuestionsController {
     private readonly questionsService: QuestionsService
   ) {}
 
+  @Post()
   @ApiOperation({
     summary: 'Creates a new question',
   })
@@ -34,8 +36,9 @@ export class QuestionsController {
     description:
       'You get a 201 response if your question is created successfully',
   })
-  @Post()
-  public createQuestion(@Body() createQuestionDto: CreateQuestionDto) {
+  public createQuestion(
+    @Body() createQuestionDto: CreateQuestionDto
+  ): Promise<Question> {
     return this.questionsService.create(createQuestionDto);
   }
 
@@ -66,10 +69,11 @@ export class QuestionsController {
     @Param() getQuestionsParamDto: GetQuestionsParamDto,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number
-  ) {
+  ): Promise<Question[]> {
     return this.questionsService.findAll(getQuestionsParamDto, limit, page);
   }
 
+  @Patch()
   @ApiOperation({
     summary: 'Updates an existing question',
   })
@@ -77,13 +81,23 @@ export class QuestionsController {
     status: 200,
     description: 'A 200 response if the question is updated successfully',
   })
-  @Patch()
-  public updateQuestion(@Body() patchQuestionDto: PatchQuestionDto) {
+  public updateQuestion(
+    @Body() patchQuestionDto: PatchQuestionDto
+  ): Promise<Question> {
     return this.questionsService.update(patchQuestionDto);
   }
 
   @Delete()
-  public deleteQuestion(@Query('id', ParseIntPipe) id: number) {
+  @ApiOperation({
+    summary: 'Deletes an existing question',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'A 200 response if the question is deleted successfully',
+  })
+  public deleteQuestion(
+    @Query('id', ParseIntPipe) id: number
+  ): Promise<{ deleted: boolean; id: number }> {
     return this.questionsService.delete(id);
   }
 }

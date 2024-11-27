@@ -1,2 +1,2 @@
 DELETE http://localhost:3000/questions/
-  ?id=3
+  ?id=2

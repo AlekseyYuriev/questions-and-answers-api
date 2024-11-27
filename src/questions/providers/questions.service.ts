@@ -1,4 +1,9 @@
-import { Body, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Injectable,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { CreateQuestionDto } from '../dtos/create-question.dto';
 import { Repository } from 'typeorm';
@@ -11,12 +16,12 @@ import { PatchQuestionDto } from '../dtos/patch-question.dto';
 @Injectable()
 export class QuestionsService {
   constructor(
-    /*
+    /**
      * Inject UsersService
      */
     private readonly usersService: UsersService,
 
-    /*
+    /**
      * Inject TagsService
      */
     private readonly tagsService: TagsService,
@@ -29,80 +34,208 @@ export class QuestionsService {
   ) {}
 
   /**
-   * Creating new questions
+   * Public method responsible for creating a new question
    */
-  public async create(@Body() createQuestionDto: CreateQuestionDto) {
-    let author = await this.usersService.findOneById(
-      createQuestionDto.authorId
-    );
+  public async create(
+    @Body() createQuestionDto: CreateQuestionDto
+  ): Promise<Question> {
+    let author = undefined;
+    let tags = undefined;
+    let question = undefined;
 
-    let tags = await this.tagsService.findMultipleTags(createQuestionDto.tags);
+    try {
+      author = await this.usersService.findOneById(createQuestionDto.authorId);
+      tags = await this.tagsService.findMultipleTags(createQuestionDto.tags);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database',
+        }
+      );
+    }
 
-    let question = this.questionsRepository.create({
+    if (!author) {
+      throw new BadRequestException(
+        'The author of the question does not exist.'
+      );
+    }
+
+    if (!tags || tags.length !== createQuestionDto.tags.length) {
+      throw new BadRequestException(
+        'Please check your tag IDs and ensure they are correct.'
+      );
+    }
+
+    question = this.questionsRepository.create({
       ...createQuestionDto,
       author: author,
       tags: tags,
     });
 
-    return await this.questionsRepository.save(question);
+    try {
+      question = await this.questionsRepository.save(question);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database',
+        }
+      );
+    }
+
+    return question;
   }
 
   /**
-   * The method to get all the questions from the database
+   * Public method responsible for handling GET request for '/questions' endpoint
    */
   public async findAll(
     getQuestionsParamDto: GetQuestionsParamDto,
     limit: number,
     page: number
-  ) {
-    let questions = await this.questionsRepository.find({
-      relations: {
-        tags: true,
-      },
-    });
+  ): Promise<Question[]> {
+    let questions = undefined;
+
+    try {
+      questions = await this.questionsRepository.find({
+        relations: {
+          tags: true,
+        },
+      });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database.',
+        }
+      );
+    }
+
+    if (!questions || questions.length <= 0) {
+      throw new BadRequestException('There are no questions in the database.');
+    }
+
     return questions;
   }
 
   /**
-   * Find a single question using the ID of the question
+   * Public method used to find one question using the ID of the question
    */
-  public async findOneById(id: number) {
-    return await this.questionsRepository.findOneBy({
-      id,
-    });
+  public async findOneById(id: number): Promise<Question> {
+    let question = undefined;
+
+    try {
+      question = await this.questionsRepository.findOneBy({
+        id,
+      });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database.',
+        }
+      );
+    }
+
+    if (!question) {
+      throw new BadRequestException('The question id does not exist.');
+    }
+
+    return question;
   }
 
   /**
-   * Update an existing questions
+   * Public method used to update an existing questions
    */
-  public async update(patchQuestionDto: PatchQuestionDto) {
-    // Find the Tags
-    let tags = await this.tagsService.findMultipleTags(patchQuestionDto.tags);
+  public async update(patchQuestionDto: PatchQuestionDto): Promise<Question> {
+    let tags = undefined;
+    let question = undefined;
 
-    // Find the Question
-    let question = await this.questionsRepository.findOneBy({
-      id: patchQuestionDto.id,
-    });
+    try {
+      tags = await this.tagsService.findMultipleTags(patchQuestionDto.tags);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.'
+      );
+    }
 
-    // Update the properties
+    if (!tags || tags.length !== patchQuestionDto.tags.length) {
+      throw new BadRequestException(
+        'Please check your tag IDs and ensure they are correct.'
+      );
+    }
+
+    try {
+      question = await this.questionsRepository.findOneBy({
+        id: patchQuestionDto.id,
+      });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database',
+        }
+      );
+    }
+
+    if (!question) {
+      throw new BadRequestException('The question does not exist.');
+    }
+
     question.title = patchQuestionDto.title ?? question.title;
     question.rating = patchQuestionDto.rating ?? question.rating;
     question.description = patchQuestionDto.description ?? question.description;
     question.createdAt = patchQuestionDto.createdAt ?? question.createdAt;
     question.updatedAt = patchQuestionDto.updatedAt ?? question.updatedAt;
 
-    // Assign the new tags
     question.tags = tags;
 
-    // Save the question and return
-    return await this.questionsRepository.save(question);
+    try {
+      question = await this.questionsRepository.save(question);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database.',
+        }
+      );
+    }
+    return question;
   }
 
   /**
-   * Delete an existing question
+   * Public method used to delete an existing question
    */
-  public async delete(id: number) {
-    await this.questionsRepository.delete(id);
+  public async delete(id: number): Promise<{ deleted: boolean; id: number }> {
+    let question = undefined;
+
+    try {
+      console.log(id);
+      question = await this.questionsRepository.findOneBy({ id });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database.',
+        }
+      );
+    }
+
+    if (!question) {
+      throw new BadRequestException('The question id does not exist.');
+    }
+
+    try {
+      await this.questionsRepository.delete(id);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database.',
+        }
+      );
+    }
 
     return { deleted: true, id };
   }

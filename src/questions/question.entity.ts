@@ -53,7 +53,9 @@ export class Question {
   })
   author: User;
 
-  @OneToMany(() => Answer, (answer) => answer.question)
+  @OneToMany(() => Answer, (answer) => answer.question, {
+    cascade: true,
+  })
   answers: Answer[];
 
   @ManyToMany(() => Tag, (tag) => tag.questions)

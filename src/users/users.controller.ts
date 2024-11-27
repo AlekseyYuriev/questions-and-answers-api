@@ -7,6 +7,7 @@ import {
   Body,
   ParseIntPipe,
   DefaultValuePipe,
+  HttpException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { GetUsersParamDto } from './dtos/get-users-param.dto';
@@ -18,12 +19,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { User } from './user.entity';
 
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
   constructor(
-    /*
+    /**
      * Injecting Users Service
      */
     private readonly usersService: UsersService
@@ -56,7 +58,7 @@ export class UsersController {
     @Param() getUsersParamDto: GetUsersParamDto,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number
-  ) {
+  ): Promise<HttpException> {
     return this.usersService.findAll(getUsersParamDto, limit, page);
   }
 
@@ -68,7 +70,12 @@ export class UsersController {
     status: 201,
     description: 'User created successfully',
   })
-  public createUser(@Body() createUserDto: CreateUserDto) {
+  @ApiBody({
+    required: true,
+    type: CreateUserDto,
+    description: 'User data to create a new user',
+  })
+  public createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
   }
 }
