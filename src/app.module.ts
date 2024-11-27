@@ -51,5 +51,3 @@ import { RolesModule } from './roles/roles.module';
   providers: [AppService],
 })
 export class AppModule {}
-
-// docker-compose exec nestjs_api sh

@@ -23,7 +23,8 @@
     "docker": "docker-compose exec nestjs_api sh",
     "makemigrations": "npm run typeorm migration:generate -- -d ./typeorm.config.ts src/migrations/auto",
     "migrate": "npm run typeorm migration:run -- -d ./typeorm.config.ts",
-    "revert": "npm run typeorm migration:revert -- -d ./typeorm.config.ts"
+    "revert": "npm run typeorm migration:revert -- -d ./typeorm.config.ts",
+    "docker:inside": "docker-compose exec nestjs_api sh"
   },
   "dependencies": {
     "@compodoc/compodoc": "^1.1.26",
@@ -37,6 +38,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
     "ioredis": "^5.4.1",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.0",
