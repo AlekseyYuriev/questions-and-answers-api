@@ -7,13 +7,17 @@ import {
   Body,
   ParseIntPipe,
   DefaultValuePipe,
-  Patch,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { GetUsersParamDto } from './dtos/get-users-param.dto';
-import { PatchUserDto } from './dtos/patch-user.dto';
 import { UsersService } from './providers/users.service';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('users')
 @ApiTags('Users')
@@ -57,12 +61,14 @@ export class UsersController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Creates a new user',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+  })
   public createUser(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
-  }
-
-  @Patch()
-  public patchUser(@Body() patchUserDto: PatchUserDto) {
-    return patchUserDto;
   }
 }
