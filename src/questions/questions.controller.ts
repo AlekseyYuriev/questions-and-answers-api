@@ -11,7 +11,13 @@ import {
   Query,
 } from '@nestjs/common';
 import { QuestionsService } from './providers/questions.service';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { PatchQuestionDto } from './dtos/patch-question.dto';
 import { GetQuestionsParamDto } from './dtos/get-questions-param.dto';
@@ -35,6 +41,11 @@ export class QuestionsController {
     status: 201,
     description:
       'You get a 201 response if your question is created successfully',
+  })
+  @ApiBody({
+    required: true,
+    type: CreateQuestionDto,
+    description: 'Question data to create a new question',
   })
   public createQuestion(
     @Body() createQuestionDto: CreateQuestionDto

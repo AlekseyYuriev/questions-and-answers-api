@@ -6,11 +6,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { TagsService } from './providers/tags.service';
 
 @Controller('tags')
+@ApiTags('Tags')
 export class TagsController {
   constructor(
     /**
@@ -19,6 +20,7 @@ export class TagsController {
     private readonly TagsService: TagsService
   ) {}
 
+  @Post()
   @ApiOperation({
     summary: 'Creates a new tag',
   })
@@ -26,11 +28,16 @@ export class TagsController {
     status: 201,
     description: 'You get a 201 response if your tag is created successfully',
   })
-  @Post()
+  @ApiBody({
+    required: true,
+    type: CreateTagDto,
+    description: 'Tag data to create a new tag',
+  })
   public createTag(@Body() createTagDto: CreateTagDto) {
     return this.TagsService.createTag(createTagDto);
   }
 
+  @Delete()
   @ApiOperation({
     summary: 'Delete an existing tag',
   })
@@ -38,11 +45,11 @@ export class TagsController {
     status: 200,
     description: 'You get a 200 response if the tag was deleted successfully',
   })
-  @Delete()
   public async deleteTag(@Query('id', ParseIntPipe) id: number) {
     return this.TagsService.delete(id);
   }
 
+  @Delete('soft-delete')
   @ApiOperation({
     summary: 'Soft delete an existing tag',
   })
@@ -51,7 +58,6 @@ export class TagsController {
     description:
       'You get a 200 response if the tag was soft deleted successfully',
   })
-  @Delete('soft-delete')
   public async softDeleteTag(@Query('id', ParseIntPipe) id: number) {
     return this.TagsService.softRemove(id);
   }
