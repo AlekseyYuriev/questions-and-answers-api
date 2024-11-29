@@ -9,6 +9,8 @@ services:
         restart: true
       cache:
         condition: service_started
+    env_file:
+      - .env.docker
     ports:
       - '${API_PORT}:${API_PORT}'
     environment:
@@ -22,6 +24,8 @@ services:
       - CACHE_URL=${CACHE_URL}
   postgres_db:
     image: postgres
+    env_file:
+      - .env.docker
     ports:
       - '${DATABASE_MAPPED_PORT}:${DATABASE_PORT}'
     environment:
