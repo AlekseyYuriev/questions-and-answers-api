@@ -11,8 +11,12 @@ services:
     environment:
       - PORT=${API_PORT}
       - NODE_ENV=${API_ENV}
-    volumes:
-      - ./src:/app/src
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - CACHE_URL=${CACHE_URL}
   postgres_db:
     image: postgres
     ports:
@@ -29,9 +33,6 @@ services:
     restart: always
     ports:
       - '${CACHE_PORT}:${CACHE_PORT}'
-    environment:
-      - REDIS_PORT=${CACHE_PORT}
-      - REDIS_PASSWORD=${CACHE_PASSWORD}
     volumes:
       - cache:/data
 

@@ -36,9 +36,6 @@ import { RolesModule } from './roles/roles.module';
       useFactory: (configService: ConfigService) => ({
         type: 'single',
         url: configService.get('CACHE_URL'),
-        host: configService.get('CACHE_HOST'),
-        port: +configService.get('CACHE_PORT'),
-        password: configService.get('CACHE_PASSWORD'),
       }),
     }),
     UsersModule,
