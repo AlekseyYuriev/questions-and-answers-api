@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
 
-config({ path: '.env.docker' });
+config();
 
 const AppDataSource = new DataSource({
   type: 'postgres',
