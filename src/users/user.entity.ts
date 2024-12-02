@@ -9,10 +9,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('User')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     type: 'varchar',
@@ -49,8 +49,6 @@ export class User {
   @OneToMany(() => Answer, (answer) => answer.author)
   answers: Answer[];
 
-  @ManyToOne(() => Role, (role) => role.users, {
-    eager: true,
-  })
+  @ManyToOne(() => Role, (role) => role.users)
   role: Role;
 }

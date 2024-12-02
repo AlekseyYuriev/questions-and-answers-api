@@ -42,17 +42,8 @@ export class TagsService {
   /**
    * Public method used to delete an existing tag
    */
-  public async delete(id: number) {
+  public async delete(id: string) {
     await this.tagsRepository.delete(id);
-
-    return { deleted: true, id };
-  }
-
-  /**
-   * Public method used to soft remove an existing tag
-   */
-  public async softRemove(id: number) {
-    await this.tagsRepository.softDelete(id);
 
     return { deleted: true, id };
   }

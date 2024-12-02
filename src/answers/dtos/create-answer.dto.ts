@@ -4,6 +4,7 @@ import {
   IsISO8601,
   IsNotEmpty,
   IsString,
+  IsUUID,
   Min,
   MinLength,
 } from 'class-validator';
@@ -47,17 +48,17 @@ export class CreateAnswerDto {
     example: 1,
   })
   @IsNotEmpty()
-  @IsInt()
-  authorId: number;
+  @IsUUID()
+  authorId: string;
 
   @ApiProperty({
-    type: 'integer',
+    type: 'string',
     required: true,
     description:
       "That's the ID of the question to which the answer is published",
     example: 1,
   })
   @IsNotEmpty()
-  @IsInt()
-  questionId: number;
+  @IsUUID()
+  questionId: string;
 }

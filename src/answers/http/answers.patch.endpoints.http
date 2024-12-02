@@ -2,6 +2,6 @@ PATCH http://localhost:3000/answers
 Content-Type: application/json
 
 {
-  "id": 1234,
-  "text": "This is the best answer for test"
+  "id": "3f2424d2-d3a0-4bac-ab98-467dc91755e4",
+  "text": "This is updated answer with id as uuid string"
 }

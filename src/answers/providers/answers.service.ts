@@ -29,7 +29,9 @@ export class AnswersService {
   /**
    * Creating new answers
    */
-  public async createAnswer(@Body() createAnswerDto: CreateAnswerDto) {
+  public async createAnswer(
+    @Body() createAnswerDto: CreateAnswerDto
+  ): Promise<Answer> {
     let author = await this.usersService.findOneById(createAnswerDto.authorId);
 
     let question = await this.questionsService.findOneById(

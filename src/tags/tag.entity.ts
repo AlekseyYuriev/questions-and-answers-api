@@ -2,17 +2,16 @@ import { Question } from 'src/questions/question.entity';
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('Tag')
 export class Tag {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     type: 'varchar',
@@ -29,7 +28,7 @@ export class Tag {
   description?: string;
 
   @ManyToMany(() => Question, (question) => question.tags, {
-    onDelete: 'CASCADE',
+    cascade: true,
   })
   questions: Question[];
 
@@ -38,7 +37,4 @@ export class Tag {
 
   @UpdateDateColumn()
   updateDate: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
 }

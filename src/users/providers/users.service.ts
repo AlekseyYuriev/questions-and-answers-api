@@ -116,7 +116,7 @@ export class UsersService {
   /**
    * Public method used to find one user using the ID of the user
    */
-  public async findOneById(id: number): Promise<User> {
+  public async findOneById(id: string): Promise<User> {
     let user = undefined;
 
     try {

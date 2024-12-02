@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional } from 'class-validator';
+import { IsOptional, IsUUID } from 'class-validator';
 
 export class GetQuestionsParamDto {
   @ApiPropertyOptional({
@@ -8,7 +8,7 @@ export class GetQuestionsParamDto {
     example: 1,
   })
   @IsOptional()
-  @IsInt()
+  @IsUUID()
   @Type(() => Number)
-  id?: number;
+  id?: string;
 }

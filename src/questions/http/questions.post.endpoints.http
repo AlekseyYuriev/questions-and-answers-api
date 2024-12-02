@@ -5,7 +5,6 @@ Content-Type: application/json
   "rating": 0,
   "title": "New question",
   "description": "Question description for test",
-  // "tags": ["nestjs", "docker", "swagger"],
   "createdAt": "2024-11-20T14:20:41.117Z",
   "updatedAt": "2024-11-20T14:20:41.117Z",
   "authorId": 1,

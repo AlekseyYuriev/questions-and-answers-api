@@ -2,7 +2,7 @@ POST http://localhost:3000/answers
 Content-Type: application/json
 
 {
-  "text": "This is the new answer with relations",
+  "text": "This is the answer with relations and id as uuid string",
   "rating": 0,
   "createdAt": "2024-11-20T14:20:41.117Z",
   "updatedAt": "2024-11-20T14:20:41.117Z",

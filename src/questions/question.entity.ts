@@ -11,10 +11,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('Question')
 export class Question {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     type: 'int',
@@ -48,9 +48,7 @@ export class Question {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.questions, {
-    eager: true,
-  })
+  @ManyToOne(() => User, (user) => user.questions)
   author: User;
 
   @OneToMany(() => Answer, (answer) => answer.question, {

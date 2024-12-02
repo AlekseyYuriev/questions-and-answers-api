@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -107,8 +108,8 @@ export class QuestionsController {
     description: 'A 200 response if the question is deleted successfully',
   })
   public deleteQuestion(
-    @Query('id', ParseIntPipe) id: number
-  ): Promise<{ deleted: boolean; id: number }> {
+    @Query('id', ParseUUIDPipe) id: string
+  ): Promise<{ deleted: boolean; id: string }> {
     return this.questionsService.delete(id);
   }
 }

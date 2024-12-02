@@ -122,7 +122,7 @@ export class QuestionsService {
   /**
    * Public method used to find one question using the ID of the question
    */
-  public async findOneById(id: number): Promise<Question> {
+  public async findOneById(id: string): Promise<Question> {
     let question = undefined;
 
     try {
@@ -207,7 +207,7 @@ export class QuestionsService {
   /**
    * Public method used to delete an existing question
    */
-  public async delete(id: number): Promise<{ deleted: boolean; id: number }> {
+  public async delete(id: string): Promise<{ deleted: boolean; id: string }> {
     let question = undefined;
 
     try {

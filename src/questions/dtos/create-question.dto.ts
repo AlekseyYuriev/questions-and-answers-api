@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
   Min,
   MinLength,
@@ -70,6 +71,6 @@ export class CreateQuestionDto {
     example: 1,
   })
   @IsNotEmpty()
-  @IsInt()
-  authorId: number;
+  @IsUUID()
+  authorId: string;
 }

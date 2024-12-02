@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -45,20 +45,7 @@ export class TagsController {
     status: 200,
     description: 'You get a 200 response if the tag was deleted successfully',
   })
-  public async deleteTag(@Query('id', ParseIntPipe) id: number) {
+  public async deleteTag(@Query('id', ParseUUIDPipe) id: string) {
     return this.TagsService.delete(id);
-  }
-
-  @Delete('soft-delete')
-  @ApiOperation({
-    summary: 'Soft delete an existing tag',
-  })
-  @ApiResponse({
-    status: 200,
-    description:
-      'You get a 200 response if the tag was soft deleted successfully',
-  })
-  public async softDeleteTag(@Query('id', ParseIntPipe) id: number) {
-    return this.TagsService.softRemove(id);
   }
 }

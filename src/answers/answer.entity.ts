@@ -2,7 +2,7 @@ import { Question } from 'src/questions/question.entity';
 import { User } from 'src/users/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('Answer')
 export class Answer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -32,9 +32,7 @@ export class Answer {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.answers, {
-    eager: true,
-  })
+  @ManyToOne(() => User, (user) => user.answers)
   author: User;
 
   @ManyToOne(() => Question, (question) => question.answers)
