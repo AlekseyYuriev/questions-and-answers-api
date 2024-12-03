@@ -13,6 +13,10 @@ async function bootstrap() {
       transform: true,
     })
   );
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
 
   const configService = app.get(ConfigService);
   const PORT = +configService.get('API_PORT') || 3000;
