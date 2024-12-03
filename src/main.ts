@@ -1,22 +1,22 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
-import { ConfigService } from '@nestjs/config'
-import { ValidationPipe } from '@nestjs/common'
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
     })
-  )
+  );
 
-  const configService = app.get(ConfigService)
-  const PORT = configService.get('API_PORT') || 3000
-  const ENV = configService.get('API_ENV') || 'development'
+  const configService = app.get(ConfigService);
+  const PORT = +configService.get('API_PORT') || 3000;
+  const ENV = configService.get('API_ENV') || 'development';
 
   /**
    * swagger configuration
@@ -27,13 +27,13 @@ async function bootstrap() {
     .setTermsOfService('http://localhost:3000/terms-of-service')
     .addServer('http://localhost:3000')
     .setVersion('1.0')
-    .build()
+    .build();
   // Instantiate Document
-  const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup('api', app, document)
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(PORT, () => {
-    console.log(`Server started in MODE: ${ENV} on Port: ${PORT}`)
-  })
+    console.log(`Server started in MODE: ${ENV} on Port: ${PORT}`);
+  });
 }
-bootstrap()
+bootstrap();
