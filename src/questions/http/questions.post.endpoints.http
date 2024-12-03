@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
   "rating": 0,
-  "title": "New question",
+  "title": "New question TypeOrm",
   "description": "Question description for test",
   "createdAt": "2024-11-20T14:20:41.117Z",
   "updatedAt": "2024-11-20T14:20:41.117Z",

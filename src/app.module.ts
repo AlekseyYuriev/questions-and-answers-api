@@ -9,6 +9,7 @@ import { QuestionsModule } from './questions/questions.module';
 import { AnswersModule } from './answers/answers.module';
 import { TagsModule } from './tags/tags.module';
 import { RolesModule } from './roles/roles.module';
+import { TypeOrmConfigService } from './config/typeOrm/typeOrmConfigService';
 
 @Module({
   imports: [
@@ -17,18 +18,7 @@ import { RolesModule } from './roles/roles.module';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        autoLoadEntities: true,
-        synchronize: false,
-        port: +configService.get('DATABASE_PORT'),
-        username: configService.get('DATABASE_USER'),
-        password: configService.get('DATABASE_PASSWORD'),
-        host: configService.get('DATABASE_HOST'),
-        database: configService.get('DATABASE_NAME'),
-      }),
+      useClass: TypeOrmConfigService,
     }),
     RedisModule.forRootAsync({
       imports: [ConfigModule],
