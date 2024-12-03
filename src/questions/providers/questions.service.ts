@@ -45,6 +45,7 @@ export class QuestionsService {
 
     try {
       author = await this.usersService.findOneById(createQuestionDto.authorId);
+      delete author.password;
       tags = await this.tagsService.findMultipleTags(createQuestionDto.tags);
     } catch (error) {
       throw new RequestTimeoutException(
@@ -211,7 +212,6 @@ export class QuestionsService {
     let question = undefined;
 
     try {
-      console.log(id);
       question = await this.questionsRepository.findOneBy({ id });
     } catch (error) {
       throw new RequestTimeoutException(

@@ -2,10 +2,10 @@ POST http://localhost:3000/answers
 Content-Type: application/json
 
 {
-  "text": "This is the answer with relations and id as uuid string",
+  "text": "Test answer with relations and id as uuid string",
   "rating": 0,
   "createdAt": "2024-11-20T14:20:41.117Z",
   "updatedAt": "2024-11-20T14:20:41.117Z",
-  "authorId": 1,
-  "questionId": 2
+  "authorId": "d0cc8618-66dc-4448-8c5a-9de59c93461d",
+  "questionId": "bcfc6b86-c9ba-4fbb-9ca2-5658b3ddbc02"
 }

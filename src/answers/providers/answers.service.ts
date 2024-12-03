@@ -33,6 +33,7 @@ export class AnswersService {
     @Body() createAnswerDto: CreateAnswerDto
   ): Promise<Answer> {
     let author = await this.usersService.findOneById(createAnswerDto.authorId);
+    delete author.password;
 
     let question = await this.questionsService.findOneById(
       createAnswerDto.questionId

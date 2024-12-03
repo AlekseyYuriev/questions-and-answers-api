@@ -29,7 +29,7 @@ export class TagsService {
   /**
    * Public method used to get multiple tags from the database using the provided IDs of the tags
    */
-  public async findMultipleTags(tags: number[]) {
+  public async findMultipleTags(tags: string[]) {
     let results = await this.tagsRepository.find({
       where: {
         id: In(tags),

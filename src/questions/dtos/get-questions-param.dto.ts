@@ -5,10 +5,10 @@ import { IsOptional, IsUUID } from 'class-validator';
 export class GetQuestionsParamDto {
   @ApiPropertyOptional({
     description: 'Get question with a specific id',
-    example: 1,
+    example: 'bcfc6b86-c9ba-4fbb-9ca2-5658b3ddbc02',
   })
   @IsOptional()
   @IsUUID()
-  @Type(() => Number)
+  @Type(() => String)
   id?: string;
 }

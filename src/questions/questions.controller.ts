@@ -13,9 +13,12 @@ import {
 } from '@nestjs/common';
 import { QuestionsService } from './providers/questions.service';
 import {
+  ApiBadRequestResponse,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiQuery,
+  ApiRequestTimeoutResponse,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -23,6 +26,8 @@ import { CreateQuestionDto } from './dtos/create-question.dto';
 import { PatchQuestionDto } from './dtos/patch-question.dto';
 import { GetQuestionsParamDto } from './dtos/get-questions-param.dto';
 import { Question } from './question.entity';
+import { CreateQuestionResponseDto } from './dtos/create-question-response.dto';
+import { GetQuestionResponseDto } from './dtos/get-question-response.dto';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -42,6 +47,16 @@ export class QuestionsController {
     status: 201,
     description:
       'You get a 201 response if your question is created successfully',
+    type: CreateQuestionResponseDto,
+  })
+  @ApiRequestTimeoutResponse({
+    description: 'Error connecting to the database',
+    example:
+      'Unable to process your request at the moment, please try again later.',
+  })
+  @ApiBadRequestResponse({
+    example: 'The author of the question does not exist.',
+    description: 'Incorrect body values',
   })
   @ApiBody({
     required: true,
@@ -61,6 +76,24 @@ export class QuestionsController {
   @ApiResponse({
     status: 200,
     description: 'Questions fetched successfully based on the query',
+    type: GetQuestionResponseDto,
+    isArray: true,
+  })
+  @ApiRequestTimeoutResponse({
+    description: 'Error connecting to the database',
+    example:
+      'Unable to process your request at the moment, please try again later.',
+  })
+  @ApiBadRequestResponse({
+    example: 'There are no questions in the database.',
+    description: 'Incorrect query',
+  })
+  @ApiParam({
+    name: 'questionId',
+    type: GetQuestionsParamDto,
+    required: false,
+    description: 'The ID of the question',
+    example: 'fbad309a-c386-4bf7-b8a9-9a3c3939d7cb',
   })
   @ApiQuery({
     name: 'limit',
@@ -92,6 +125,21 @@ export class QuestionsController {
   @ApiResponse({
     status: 200,
     description: 'A 200 response if the question is updated successfully',
+    type: CreateQuestionResponseDto,
+  })
+  @ApiRequestTimeoutResponse({
+    description: 'Error connecting to the database',
+    example:
+      'Unable to process your request at the moment, please try again later.',
+  })
+  @ApiBadRequestResponse({
+    example: 'The author of the question does not exist.',
+    description: 'Incorrect body values',
+  })
+  @ApiBody({
+    required: true,
+    type: PatchQuestionDto,
+    description: 'Question data to update an existing question',
   })
   public updateQuestion(
     @Body() patchQuestionDto: PatchQuestionDto
@@ -106,6 +154,26 @@ export class QuestionsController {
   @ApiResponse({
     status: 200,
     description: 'A 200 response if the question is deleted successfully',
+    example: {
+      deleted: true,
+      id: 'bcfc6b86-c9ba-4fbb-9ca2-5658b3ddbc02',
+    },
+  })
+  @ApiRequestTimeoutResponse({
+    description: 'Error connecting to the database',
+    example:
+      'Unable to process your request at the moment, please try again later.',
+  })
+  @ApiBadRequestResponse({
+    example: 'The question ID does not exist.',
+    description: 'Incorrect question ID',
+  })
+  @ApiQuery({
+    name: 'id',
+    type: 'string',
+    required: true,
+    description: 'The ID of the question',
+    example: 'bcfc6b86-c9ba-4fbb-9ca2-5658b3ddbc02',
   })
   public deleteQuestion(
     @Query('id', ParseUUIDPipe) id: string

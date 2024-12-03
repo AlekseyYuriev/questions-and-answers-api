@@ -45,7 +45,7 @@ export class CreateAnswerDto {
     type: 'integer',
     required: true,
     description: "That's the ID of the author of the answer",
-    example: 1,
+    example: 'd0cc8618-66dc-4448-8c5a-9de59c93461d',
   })
   @IsNotEmpty()
   @IsUUID()
@@ -56,7 +56,7 @@ export class CreateAnswerDto {
     required: true,
     description:
       "That's the ID of the question to which the answer is published",
-    example: 1,
+    example: 'bcfc6b86-c9ba-4fbb-9ca2-5658b3ddbc02',
   })
   @IsNotEmpty()
   @IsUUID()

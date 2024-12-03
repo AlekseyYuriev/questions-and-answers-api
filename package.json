@@ -22,6 +22,7 @@
     "typeorm": "typeorm",
     "typeorm:local": "typeorm-ts-node-commonjs",
     "docker": "docker-compose exec nestjs_api sh",
+    "docker:up": "docker-compose --env-file .env.docker up --build",
     "check:health": "sh -c 'postgres_status=$(docker inspect --format=\"{{json .State.Health.Status}}\" questions-and-answers-api-postgres_db-1); echo \"postgresql: ${postgres_status}\";'",
     "makemigrations": "npm run typeorm:local migration:generate -- -d ./typeorm.config.ts src/migrations/auto",
     "migrate:local": "npm run typeorm:local migration:run -- -d ./typeorm.config.ts",

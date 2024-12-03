@@ -11,8 +11,10 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { Tag } from 'src/tags/tag.entity';
+import { User } from 'src/users/user.entity';
 
-export class CreateQuestionDto {
+export class CreateQuestionResponseDto {
   @ApiProperty({
     description: 'This is rating for the question',
     example: 3,
@@ -55,25 +57,49 @@ export class CreateQuestionDto {
   @IsISO8601()
   updatedAt: Date;
 
+  @ApiProperty({
+    type: User,
+    required: true,
+    description: "That's the author of the answer",
+    example: {
+      id: 'd0cc8618-66dc-4448-8c5a-9de59c93461d',
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane@smith.com',
+    },
+  })
+  @IsNotEmpty()
+  author: User;
+
   @ApiPropertyOptional({
-    description: 'Array of ids of tags',
+    description: 'Array of tags',
     example: [
-      '374fb32e-417a-4497-b677-f57e4292c76e',
-      '8823fc8e-9d49-43da-ae60-735fe1949624',
+      {
+        id: '374fb32e-417a-4497-b677-f57e4292c76e',
+        name: 'javascript',
+        description: 'All questions javascript',
+        createDate: '2024-12-02T13:54:15.904Z',
+        updateDate: '2024-12-02T13:54:15.904Z',
+      },
+      {
+        id: '8823fc8e-9d49-43da-ae60-735fe1949624',
+        name: 'nestjs',
+        description: 'All questions nestjs',
+        createDate: '2024-12-02T13:54:15.904Z',
+        updateDate: '2024-12-02T13:54:15.904Z',
+      },
     ],
   })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  tags?: string[];
+  tags?: Tag[];
 
   @ApiProperty({
-    type: 'integer',
-    required: true,
-    description: "That's the ID of the author of the question",
-    example: 'd0cc8618-66dc-4448-8c5a-9de59c93461d',
+    description: 'This is the ID of the created question',
+    example: '37e2e510-1d79-44c4-83d3-ea4548ad68c6',
   })
-  @IsNotEmpty()
   @IsUUID()
-  authorId: string;
+  @IsNotEmpty()
+  id: string;
 }

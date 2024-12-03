@@ -7,6 +7,6 @@ Content-Type: application/json
   "description": "Question description for test",
   "createdAt": "2024-11-20T14:20:41.117Z",
   "updatedAt": "2024-11-20T14:20:41.117Z",
-  "authorId": 1,
-  "tags": [1,2]
+  "authorId": "d0cc8618-66dc-4448-8c5a-9de59c93461d",
+  "tags": ["374fb32e-417a-4497-b677-f57e4292c76e","8823fc8e-9d49-43da-ae60-735fe1949624"]
 }

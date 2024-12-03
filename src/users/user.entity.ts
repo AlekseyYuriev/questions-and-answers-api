@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Answer } from 'src/answers/answer.entity';
 import { Question } from 'src/questions/question.entity';
 import { Role } from 'src/roles/role.entity';
@@ -41,6 +42,7 @@ export class User {
     length: 96,
     nullable: false,
   })
+  @Exclude()
   password: string;
 
   @OneToMany(() => Question, (question) => question.author)
