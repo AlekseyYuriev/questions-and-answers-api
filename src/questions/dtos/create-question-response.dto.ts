@@ -16,6 +16,7 @@ import { User } from 'src/users/user.entity';
 
 export class CreateQuestionResponseDto {
   @ApiProperty({
+    type: 'number',
     description: 'This is rating for the question',
     example: 3,
   })
@@ -24,6 +25,7 @@ export class CreateQuestionResponseDto {
   rating: number;
 
   @ApiProperty({
+    type: 'string',
     description: "That's the title of the question",
     example: 'How to dockerize Redis in NestJS app?',
   })
@@ -34,6 +36,7 @@ export class CreateQuestionResponseDto {
   title: string;
 
   @ApiProperty({
+    type: 'string',
     description: "That's the description of the question",
     example:
       "I've addes redis service to docker-compose file, but the app is crashing when I try to up the docker",
@@ -44,6 +47,7 @@ export class CreateQuestionResponseDto {
   description: string;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the question is published',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -51,6 +55,7 @@ export class CreateQuestionResponseDto {
   createdAt: Date;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the question is updated',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -72,6 +77,7 @@ export class CreateQuestionResponseDto {
   author: User;
 
   @ApiPropertyOptional({
+    type: 'array',
     description: 'Array of tags',
     example: [
       {
@@ -96,6 +102,7 @@ export class CreateQuestionResponseDto {
   tags?: Tag[];
 
   @ApiProperty({
+    type: 'string',
     description: 'This is the ID of the created question',
     example: '37e2e510-1d79-44c4-83d3-ea4548ad68c6',
   })

@@ -11,6 +11,7 @@ import {
 
 export class CreateUserDto {
   @ApiProperty({
+    type: 'string',
     description: 'This is first name of the user',
     example: 'John',
   })
@@ -21,6 +22,7 @@ export class CreateUserDto {
   firstName: string;
 
   @ApiProperty({
+    type: 'string',
     description: 'This is last name of the user',
     example: 'Doe',
   })
@@ -31,6 +33,7 @@ export class CreateUserDto {
   lastName?: string;
 
   @ApiProperty({
+    type: 'string',
     description: 'This is email of the user',
     example: 'john@doe.com',
   })
@@ -40,6 +43,7 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
+    type: 'string',
     description: 'This is password of the user account',
     example: 'Password789!',
   })

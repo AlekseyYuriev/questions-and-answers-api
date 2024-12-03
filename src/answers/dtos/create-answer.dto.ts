@@ -11,6 +11,7 @@ import {
 
 export class CreateAnswerDto {
   @ApiProperty({
+    type: 'string',
     description: 'This is the text of the answer',
     example: 'Try to change the connection port',
   })
@@ -20,6 +21,7 @@ export class CreateAnswerDto {
   text: string;
 
   @ApiProperty({
+    type: 'number',
     description: 'This is rating for the answer',
     example: 7,
   })
@@ -28,6 +30,7 @@ export class CreateAnswerDto {
   rating: number;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the answer is published',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -35,6 +38,7 @@ export class CreateAnswerDto {
   createdAt: Date;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the answer is updated',
     example: '2024-11-20T14:20:41.117Z',
   })

@@ -14,6 +14,7 @@ import {
 
 export class CreateQuestionDto {
   @ApiProperty({
+    type: 'number',
     description: 'This is rating for the question',
     example: 3,
   })
@@ -22,6 +23,7 @@ export class CreateQuestionDto {
   rating: number;
 
   @ApiProperty({
+    type: 'string',
     description: "That's the title of the question",
     example: 'How to dockerize Redis in NestJS app?',
   })
@@ -32,6 +34,7 @@ export class CreateQuestionDto {
   title: string;
 
   @ApiProperty({
+    type: 'string',
     description: "That's the description of the question",
     example:
       "I've addes redis service to docker-compose file, but the app is crashing when I try to up the docker",
@@ -42,6 +45,7 @@ export class CreateQuestionDto {
   description: string;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the question is published',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -49,6 +53,7 @@ export class CreateQuestionDto {
   createdAt: Date;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the question is updated',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -56,6 +61,7 @@ export class CreateQuestionDto {
   updatedAt: Date;
 
   @ApiPropertyOptional({
+    type: 'array',
     description: 'Array of ids of tags',
     example: [
       '374fb32e-417a-4497-b677-f57e4292c76e',
@@ -68,7 +74,7 @@ export class CreateQuestionDto {
   tags?: string[];
 
   @ApiProperty({
-    type: 'integer',
+    type: 'string',
     required: true,
     description: "That's the ID of the author of the question",
     example: 'd0cc8618-66dc-4448-8c5a-9de59c93461d',

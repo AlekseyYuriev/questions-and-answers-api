@@ -4,6 +4,7 @@ import { CreateQuestionDto } from './create-question.dto';
 
 export class PatchQuestionDto extends PartialType(CreateQuestionDto) {
   @ApiProperty({
+    type: 'string',
     description: 'The ID of the question that needs to be updated',
   })
   @IsUUID()

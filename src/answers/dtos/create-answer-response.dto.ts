@@ -13,6 +13,7 @@ import { User } from 'src/users/user.entity';
 
 export class CreateAnswerResponseDto {
   @ApiProperty({
+    type: 'string',
     description: 'This is the text of the answer',
     example: 'Try to change the connection port',
   })
@@ -22,6 +23,7 @@ export class CreateAnswerResponseDto {
   text: string;
 
   @ApiProperty({
+    type: 'number',
     description: 'This is rating for the answer',
     example: 7,
   })
@@ -30,6 +32,7 @@ export class CreateAnswerResponseDto {
   rating: number;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the answer is published',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -37,6 +40,7 @@ export class CreateAnswerResponseDto {
   createdAt: Date;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the answer is updated',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -74,6 +78,7 @@ export class CreateAnswerResponseDto {
   questionId: Question;
 
   @ApiProperty({
+    type: 'string',
     description: 'This is the ID of the created answer',
     example: 'af9724ca-ace0-458d-866d-d124f10c1be6',
   })

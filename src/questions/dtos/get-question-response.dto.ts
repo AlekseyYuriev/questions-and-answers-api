@@ -15,6 +15,7 @@ import { Tag } from 'src/tags/tag.entity';
 
 export class GetQuestionResponseDto {
   @ApiProperty({
+    type: 'string',
     description: 'This is the ID of the created question',
     example: '37e2e510-1d79-44c4-83d3-ea4548ad68c6',
   })
@@ -23,6 +24,7 @@ export class GetQuestionResponseDto {
   id: string;
 
   @ApiProperty({
+    type: 'number',
     description: 'This is rating for the question',
     example: 3,
   })
@@ -31,6 +33,7 @@ export class GetQuestionResponseDto {
   rating: number;
 
   @ApiProperty({
+    type: 'string',
     description: "That's the title of the question",
     example: 'How to dockerize Redis in NestJS app?',
   })
@@ -41,6 +44,7 @@ export class GetQuestionResponseDto {
   title: string;
 
   @ApiProperty({
+    type: 'string',
     description: "That's the description of the question",
     example:
       "I've addes redis service to docker-compose file, but the app is crashing when I try to up the docker",
@@ -51,6 +55,7 @@ export class GetQuestionResponseDto {
   description: string;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the question is published',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -58,6 +63,7 @@ export class GetQuestionResponseDto {
   createdAt: Date;
 
   @ApiProperty({
+    type: 'string',
     description: 'The date on which the question is updated',
     example: '2024-11-20T14:20:41.117Z',
   })
@@ -65,6 +71,7 @@ export class GetQuestionResponseDto {
   updatedAt: Date;
 
   @ApiPropertyOptional({
+    type: 'array',
     description: 'Array of tags',
     example: [
       {

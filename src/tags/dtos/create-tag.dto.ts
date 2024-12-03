@@ -9,6 +9,7 @@ import {
 
 export class CreateTagDto {
   @ApiProperty({
+    type: 'string',
     description: 'This is the name of the tag',
     example: 'javascript',
   })
@@ -19,6 +20,7 @@ export class CreateTagDto {
   name: string;
 
   @ApiPropertyOptional({
+    type: 'string',
     description: 'This is the description of the tag',
     example: 'All questions javascript',
   })
