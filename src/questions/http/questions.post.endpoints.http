@@ -3,10 +3,8 @@ Content-Type: application/json
 
 {
   "rating": 0,
-  "title": "New question TypeOrm",
+  "title": "New question TypeOrm 1",
   "description": "Question description for test",
-  "createdAt": "2024-11-20T14:20:41.117Z",
-  "updatedAt": "2024-11-20T14:20:41.117Z",
-  "authorId": "d0cc8618-66dc-4448-8c5a-9de59c93461d",
-  "tags": ["374fb32e-417a-4497-b677-f57e4292c76e","8823fc8e-9d49-43da-ae60-735fe1949624"]
+  "tags": ["0fca7522-b8f8-45a3-bd27-b5c5666debe8","23d17f96-ad4b-4a28-a157-dc4e61f7c689"],
+  "authorId": "4ac81a95-5a5a-4b3b-a58a-300927fa8693"
 }

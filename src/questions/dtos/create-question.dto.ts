@@ -2,7 +2,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsInt,
-  IsISO8601,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -43,22 +42,6 @@ export class CreateQuestionDto {
   @MinLength(8)
   @IsNotEmpty()
   description: string;
-
-  @ApiProperty({
-    type: 'string',
-    description: 'The date on which the question is published',
-    example: '2024-11-20T14:20:41.117Z',
-  })
-  @IsISO8601()
-  createdAt: Date;
-
-  @ApiProperty({
-    type: 'string',
-    description: 'The date on which the question is updated',
-    example: '2024-11-20T14:20:41.117Z',
-  })
-  @IsISO8601()
-  updatedAt: Date;
 
   @ApiPropertyOptional({
     type: 'array',

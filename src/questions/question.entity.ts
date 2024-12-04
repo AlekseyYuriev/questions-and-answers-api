@@ -3,12 +3,14 @@ import { Tag } from 'src/tags/tag.entity';
 import { User } from 'src/users/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('Question')
@@ -36,13 +38,13 @@ export class Question {
   })
   description: string;
 
-  @Column({
+  @CreateDateColumn({
     type: 'timestamp',
     nullable: false,
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     type: 'timestamp',
     nullable: false,
   })

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsInt,
-  IsISO8601,
   IsNotEmpty,
   IsString,
   IsUUID,
@@ -28,22 +27,6 @@ export class CreateAnswerDto {
   @IsInt()
   @Min(0)
   rating: number;
-
-  @ApiProperty({
-    type: 'string',
-    description: 'The date on which the answer is published',
-    example: '2024-11-20T14:20:41.117Z',
-  })
-  @IsISO8601()
-  createdAt: Date;
-
-  @ApiProperty({
-    type: 'string',
-    description: 'The date on which the answer is updated',
-    example: '2024-11-20T14:20:41.117Z',
-  })
-  @IsISO8601()
-  updatedAt: Date;
 
   @ApiProperty({
     type: 'integer',

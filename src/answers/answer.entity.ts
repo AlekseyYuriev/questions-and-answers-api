@@ -1,6 +1,13 @@
 import { Question } from 'src/questions/question.entity';
 import { User } from 'src/users/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('Answer')
 export class Answer {
@@ -20,13 +27,13 @@ export class Answer {
   })
   rating: number;
 
-  @Column({
+  @CreateDateColumn({
     type: 'timestamp',
     nullable: false,
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     type: 'timestamp',
     nullable: false,
   })

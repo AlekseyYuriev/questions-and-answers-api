@@ -2,7 +2,7 @@ PATCH http://localhost:3000/questions/
 Content-Type: application/json
 
 {
-  "id": "fbad309a-c386-4bf7-b8a9-9a3c3939d7cb",
+  "id": "da8cd93b-733d-474b-9770-f6ca0af57202",
   "title": "What's new with NestJS With TypeScript",
-  "tags": ["374fb32e-417a-4497-b677-f57e4292c76e","8823fc8e-9d49-43da-ae60-735fe1949624"]
+  "tags": ["d6e7402d-ac22-46f9-b8e0-b6e84c42d175"]
 }

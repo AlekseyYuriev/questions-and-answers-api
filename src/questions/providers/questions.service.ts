@@ -39,44 +39,33 @@ export class QuestionsService {
   public async create(
     @Body() createQuestionDto: CreateQuestionDto
   ): Promise<Question> {
-    let author = undefined;
-    let tags = undefined;
     let question = undefined;
 
     try {
-      author = await this.usersService.findOneById(createQuestionDto.authorId);
-      delete author.password;
-      tags = await this.tagsService.findMultipleTags(createQuestionDto.tags);
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database',
-        }
-      );
-    }
+      const [author, tags] = await Promise.all([
+        this.usersService.findOneById(createQuestionDto.authorId),
+        this.tagsService.findMultipleTags(createQuestionDto.tags),
+      ]);
 
-    if (!author) {
-      throw new BadRequestException(
-        'The author of the question does not exist.'
-      );
-    }
+      if (!tags || tags.length !== createQuestionDto.tags.length) {
+        throw new BadRequestException(
+          'Please check your tag IDs and ensure they are correct.'
+        );
+      }
 
-    if (!tags || tags.length !== createQuestionDto.tags.length) {
-      throw new BadRequestException(
-        'Please check your tag IDs and ensure they are correct.'
-      );
-    }
+      question = this.questionsRepository.create({
+        ...createQuestionDto,
+        author: author,
+        tags: tags,
+      });
 
-    question = this.questionsRepository.create({
-      ...createQuestionDto,
-      author: author,
-      tags: tags,
-    });
-
-    try {
       question = await this.questionsRepository.save(question);
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(
+          'Please check your user ID and tag IDs and ensure they are correct.'
+        );
+      }
       throw new RequestTimeoutException(
         'Unable to process your request at the moment, please try again later.',
         {
@@ -184,16 +173,10 @@ export class QuestionsService {
       throw new BadRequestException('The question does not exist.');
     }
 
-    question.title = patchQuestionDto.title ?? question.title;
-    question.rating = patchQuestionDto.rating ?? question.rating;
-    question.description = patchQuestionDto.description ?? question.description;
-    question.createdAt = patchQuestionDto.createdAt ?? question.createdAt;
-    question.updatedAt = patchQuestionDto.updatedAt ?? question.updatedAt;
-
-    question.tags = tags;
+    const updatedQuestion = Object.assign({}, question, patchQuestionDto);
 
     try {
-      question = await this.questionsRepository.save(question);
+      await this.questionsRepository.save(updatedQuestion);
     } catch (error) {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment, please try again later.',
@@ -202,7 +185,7 @@ export class QuestionsService {
         }
       );
     }
-    return question;
+    return updatedQuestion;
   }
 
   /**

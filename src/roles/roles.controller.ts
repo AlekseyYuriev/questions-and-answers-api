@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { RolesService } from './providers/roles.service';
 import { CreateRoleDto } from './dtos/create-role.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { roleType } from './enums/roleType';
 
 @Controller('roles')
 export class RolesController {
@@ -25,7 +26,7 @@ export class RolesController {
     status: 200,
     description: 'Role fetched successfully based on the query',
   })
-  public getRole(@Param('value') value: string) {
+  public getRole(@Param('value') value: roleType) {
     return this.rolesService.getRoleByValue(value);
   }
 }

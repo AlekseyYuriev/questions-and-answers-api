@@ -11,6 +11,7 @@ import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
+import { roleType } from 'src/roles/enums/roleType';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -57,7 +58,7 @@ export class UsersService {
     }
 
     try {
-      role = await this.rolesService.getRoleByValue('USER');
+      role = await this.rolesService.getRoleByValue(roleType.USER);
     } catch (error) {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment, please try again later.',

@@ -4,8 +4,6 @@ Content-Type: application/json
 {
   "text": "Test answer with relations and id as uuid string",
   "rating": 0,
-  "createdAt": "2024-11-20T14:20:41.117Z",
-  "updatedAt": "2024-11-20T14:20:41.117Z",
-  "authorId": "d0cc8618-66dc-4448-8c5a-9de59c93461d",
-  "questionId": "bcfc6b86-c9ba-4fbb-9ca2-5658b3ddbc02"
+  "authorId": "4ac81a95-5a5a-4b3b-a58a-300927fa8693",
+  "questionId": "52c4626a-009c-4652-a795-479301d6cc5d"
 }
