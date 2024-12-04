@@ -9,9 +9,12 @@ This is RESTful web service for questions & answers system (similar to stackover
 
 - Use docker-desktop as the app is dockerized
 - `git clone https://github.com/AlekseyYuriev/questions-and-answers-api.git` - clone the repository (HTTPS)
-- `docker-compose up --build` - build docker container
+- `npm run docker:up` - build docker container and up the app
 - `npm run docker` - to run migrations you should first connect to docker container
-- `npm run migrate` - run the migrations inside docker container
+- `npm run migrate:docker` - run the migrations inside docker container
+
+If you run the app locally you need `.env ` or `.env.environment` file. <br>
+If you run the app in docker container you need `.env.docker` file.
 
 Here is exemplary view of your .env file:
 
@@ -26,9 +29,7 @@ Here is exemplary view of your .env file:
 - `DATABASE_NAME=name for your database`
 
 - `CACHE_URL=cache`
-- `CACHE_HOST=cache`
 - `CACHE_PORT=your PORT for cash database`
-- `CACHE_PASSWORD=your password for cash database`
 
 <h2>3. Additional features</h2>
 
