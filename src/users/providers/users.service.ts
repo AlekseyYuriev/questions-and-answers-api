@@ -15,6 +15,7 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
 import { roleType } from 'src/roles/enums/roleType';
 import { AuthService } from 'src/auth/providers/auth.service';
+import { CreateUserProvider } from './create-user.provider';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -37,67 +38,19 @@ export class UsersService {
      * Injecting usersRepository
      */
     @InjectRepository(User)
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
+
+    /**
+     * Inject createUserProvider
+     */
+    private readonly createUserProvider: CreateUserProvider
   ) {}
 
   /**
    * Public method responsible for creating a new user
    */
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
-    let existingUser = undefined;
-    let role = undefined;
-
-    try {
-      existingUser = await this.usersRepository.findOne({
-        where: { email: createUserDto.email },
-      });
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database',
-        }
-      );
-    }
-
-    if (existingUser) {
-      throw new BadRequestException(
-        'The user already exists, please check your email.'
-      );
-    }
-
-    try {
-      role = await this.rolesService.getRoleByValue(roleType.USER);
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database',
-        }
-      );
-    }
-
-    if (!role) {
-      throw new BadRequestException('The role does not exist.');
-    }
-
-    let newUser = this.usersRepository.create({
-      ...createUserDto,
-      role: role,
-    });
-
-    try {
-      newUser = await this.usersRepository.save(newUser);
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database.',
-        }
-      );
-    }
-
-    return newUser;
+    return this.createUserProvider.createUser(createUserDto);
   }
 
   /**
