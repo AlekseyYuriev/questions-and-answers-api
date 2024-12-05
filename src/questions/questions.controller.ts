@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { QuestionsService } from './providers/questions.service';
 import {
@@ -28,6 +29,7 @@ import { GetQuestionsParamDto } from './dtos/get-questions-param.dto';
 import { Question } from './question.entity';
 import { CreateQuestionResponseDto } from './dtos/create-question-response.dto';
 import { GetQuestionResponseDto } from './dtos/get-question-response.dto';
+import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -69,6 +71,7 @@ export class QuestionsController {
     return this.questionsService.create(createQuestionDto);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get('/:id?')
   @ApiOperation({
     summary: 'Fetches a list of published questions on the application',
