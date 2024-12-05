@@ -13,15 +13,6 @@ services:
       - .env.docker
     ports:
       - '${API_PORT}:${API_PORT}'
-    environment:
-      - PORT=${API_PORT}
-      - NODE_ENV=${API_ENV}
-      - DATABASE_HOST=${DATABASE_HOST}
-      - DATABASE_PORT=${DATABASE_PORT}
-      - DATABASE_USER=${DATABASE_USER}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-      - DATABASE_NAME=${DATABASE_NAME}
-      - CACHE_URL=${CACHE_URL}
   postgres_db:
     image: postgres
     env_file:
