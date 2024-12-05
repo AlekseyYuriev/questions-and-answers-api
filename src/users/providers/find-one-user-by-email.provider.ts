@@ -21,8 +21,9 @@ export class FindOneUserByEmailProvider {
     let user: User | undefined = undefined;
 
     try {
-      user = await this.usersRepository.findOneBy({
-        email: email,
+      user = await this.usersRepository.findOne({
+        where: { email: email },
+        relations: { role: true },
       });
     } catch (error) {
       throw new RequestTimeoutException(error, {

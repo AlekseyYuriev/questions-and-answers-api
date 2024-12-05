@@ -13,7 +13,7 @@ export class AuthController {
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
-  public async signIn(@Body() signInDto: SignInDto): Promise<boolean> {
+  public async signIn(@Body() signInDto: SignInDto): Promise<object> {
     return this.authService.signIn(signInDto);
   }
 }
