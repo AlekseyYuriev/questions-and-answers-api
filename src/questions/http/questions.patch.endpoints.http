@@ -1,0 +1,8 @@
+PATCH http://localhost:3000/questions/
+Content-Type: application/json
+
+{
+  "id": "da8cd93b-733d-474b-9770-f6ca0af57202",
+  "title": "What's new with NestJS With TypeScript",
+  "tags": ["d6e7402d-ac22-46f9-b8e0-b6e84c42d175"]
+}

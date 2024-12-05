@@ -1,0 +1,45 @@
+services:
+  nestjs_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+        restart: true
+      cache:
+        condition: service_started
+    env_file:
+      - .env.docker
+    ports:
+      - '${API_PORT}:${API_PORT}'
+  postgres_db:
+    image: postgres
+    env_file:
+      - .env.docker
+    ports:
+      - '${DATABASE_MAPPED_PORT}:${DATABASE_PORT}'
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PORT=${DATABASE_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+  cache:
+    image: redis
+    restart: always
+    ports:
+      - '${CACHE_PORT}:${CACHE_PORT}'
+    volumes:
+      - cache:/data
+
+volumes:
+  pgdata:
+  cache:

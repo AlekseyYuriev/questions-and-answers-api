@@ -1,0 +1,9 @@
+POST http://localhost:3000/answers
+Content-Type: application/json
+
+{
+  "text": "Test answer with relations and id as uuid string",
+  "rating": 0,
+  "authorId": "4ac81a95-5a5a-4b3b-a58a-300927fa8693",
+  "questionId": "52c4626a-009c-4652-a795-479301d6cc5d"
+}
