@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
 import { roleType } from 'src/roles/enums/roleType';
+import { AuthService } from 'src/auth/providers/auth.service';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -20,7 +23,13 @@ import { roleType } from 'src/roles/enums/roleType';
 export class UsersService {
   constructor(
     /**
-     * Inject RolesService
+     * Inject Auth Service
+     */
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+
+    /**
+     * Inject Roles Service
      */
     private readonly rolesService: RolesService,
 
