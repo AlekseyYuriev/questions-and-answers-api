@@ -16,6 +16,7 @@ import { RolesService } from 'src/roles/providers/roles.service';
 import { roleType } from 'src/roles/enums/roleType';
 import { AuthService } from 'src/auth/providers/auth.service';
 import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -43,7 +44,12 @@ export class UsersService {
     /**
      * Inject createUserProvider
      */
-    private readonly createUserProvider: CreateUserProvider
+    private readonly createUserProvider: CreateUserProvider,
+
+    /**
+     * Inject findOneUserByEmailProvider
+     */
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider
   ) {}
 
   /**
@@ -100,5 +106,9 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  public async findOneByEmail(email: string): Promise<User> {
+    return await this.findOneUserByEmailProvider.findOneByEmail(email);
   }
 }
