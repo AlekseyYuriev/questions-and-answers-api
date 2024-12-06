@@ -16,7 +16,7 @@ import jwtConfig from 'src/auth/config/jwt.config';
 import { REQUEST_USER_KEY } from 'src/auth/constants/auth.constants';
 
 @Injectable()
-export class AccessTokenGuard implements CanActivate {
+export class RolesGuard implements CanActivate {
   constructor(
     /**
      * Inject jwtService
@@ -36,13 +36,10 @@ export class AccessTokenGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    //Extract the request from the execution context
     const request = context.switchToHttp().getRequest();
 
-    // Exctract the token from the header
     const token = this.extractRequestFromHeader(request);
 
-    // Validate the token
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -53,8 +50,21 @@ export class AccessTokenGuard implements CanActivate {
         this.jwtConfiguration
       );
 
+      if (payload.role !== 'admin') {
+        console.log('You do not have permission ');
+        throw new UnauthorizedException(
+          'You do not have permission to access this resource'
+        );
+      }
+
       request[REQUEST_USER_KEY] = payload;
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof UnauthorizedException &&
+        error.message === 'You do not have permission to access this resource'
+      ) {
+        throw new UnauthorizedException(error.message);
+      }
       throw new UnauthorizedException();
     }
 
