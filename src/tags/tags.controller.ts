@@ -2,13 +2,26 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   ParseUUIDPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOperation,
+  ApiRequestTimeoutResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { TagsService } from './providers/tags.service';
+import { Tag } from './tag.entity';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { RoleType } from 'src/auth/enums/role-type.enum';
+import { AuthenticationGuard } from 'src/auth/guards/authentication/authentication.guard';
 
 @Controller('tags')
 @ApiTags('Tags')
@@ -47,5 +60,30 @@ export class TagsController {
   })
   public async deleteTag(@Query('id', ParseUUIDPipe) id: string) {
     return this.TagsService.delete(id);
+  }
+
+  @Role(RoleType.Admin)
+  @UseGuards(AuthenticationGuard)
+  @Get()
+  @ApiOperation({
+    summary: 'Fetches a list of published tags on the application',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Questions fetched successfully based on the query',
+    // type: GetQuestionResponseDto,
+    isArray: true,
+  })
+  @ApiRequestTimeoutResponse({
+    description: 'Error connecting to the database',
+    example:
+      'Unable to process your request at the moment, please try again later.',
+  })
+  @ApiBadRequestResponse({
+    example: 'There are no tags in the database.',
+    description: 'Incorrect query',
+  })
+  public getQuestions(): Promise<Tag[]> {
+    return this.TagsService.findAll();
   }
 }

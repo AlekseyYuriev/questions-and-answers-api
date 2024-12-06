@@ -30,6 +30,8 @@ import { Question } from './question.entity';
 import { CreateQuestionResponseDto } from './dtos/create-question-response.dto';
 import { GetQuestionResponseDto } from './dtos/get-question-response.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { RoleType } from 'src/auth/enums/role-type.enum';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -72,6 +74,7 @@ export class QuestionsController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Role(RoleType.User)
   @Get('/:id?')
   @ApiOperation({
     summary: 'Fetches a list of published questions on the application',

@@ -51,7 +51,6 @@ export class RolesGuard implements CanActivate {
       );
 
       if (payload.role !== 'admin') {
-        console.log('You do not have permission ');
         throw new UnauthorizedException(
           'You do not have permission to access this resource'
         );
