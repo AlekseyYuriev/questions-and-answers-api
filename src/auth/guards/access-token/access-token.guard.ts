@@ -10,6 +10,8 @@ import { JwtService } from '@nestjs/jwt';
 import jwtConfig from 'src/auth/config/jwt.config';
 import { Request } from 'express';
 import { REQUEST_USER_KEY } from 'src/auth/constants/auth.constants';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
@@ -23,7 +25,12 @@ export class AccessTokenGuard implements CanActivate {
      * Inject jwtConfiguration
      */
     @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+
+    /**
+     * Inject Redis
+     */
+    @InjectRedis() private readonly redis: Redis
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     //Extract the request from the execution context
@@ -46,6 +53,14 @@ export class AccessTokenGuard implements CanActivate {
       request[REQUEST_USER_KEY] = payload;
     } catch {
       throw new UnauthorizedException();
+    }
+
+    const redisData = await this.redis.get(
+      `user:${request[REQUEST_USER_KEY].sub}:token`
+    );
+
+    if (!redisData) {
+      throw new UnauthorizedException('Redis exception');
     }
 
     return true;

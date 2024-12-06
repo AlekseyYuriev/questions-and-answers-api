@@ -12,6 +12,8 @@ import { User } from 'src/users/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 @Injectable()
 export class SignInProvider {
@@ -36,7 +38,13 @@ export class SignInProvider {
      * Inject jwtConfiguration
      */
     @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+
+    /**
+     * Inject Redis
+     */
+    @InjectRedis()
+    private readonly redis: Redis
   ) {}
 
   public async signIn(signInDto: SignInDto): Promise<object> {
@@ -72,6 +80,8 @@ export class SignInProvider {
         expiresIn: this.jwtConfiguration.accessTokenTtl,
       }
     );
+
+    await this.redis.set(`user:${user.id}:token`, accessToken, 'EX', 3600);
 
     return {
       accessToken,
