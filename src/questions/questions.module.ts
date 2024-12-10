@@ -7,11 +7,12 @@ import { Question } from './question.entity';
 import { TagsModule } from 'src/tags/tags.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { CreateQuestionProvider } from './providers/create-question.provider';
 import jwtConfig from 'src/auth/config/jwt.config';
 
 @Module({
   controllers: [QuestionsController],
-  providers: [QuestionsService],
+  providers: [QuestionsService, CreateQuestionProvider],
   exports: [QuestionsService],
   imports: [
     UsersModule,

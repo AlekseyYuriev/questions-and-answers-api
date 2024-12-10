@@ -1,10 +1,10 @@
 POST http://localhost:3000/questions
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmZjg3ZDRkYS0zZTBmLTQ0NGQtOWIzZS0yZTEzNzQ4YzA3YjgiLCJlbWFpbCI6Im1hcmtAaG9sZGVuLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMzODM0Mzc3LCJleHAiOjE3MzM4Mzc5NzcsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.U09cMjSKUQ6j2CYUPhdI7Z0niVy-3Drt65xwCgPXlJ8
 
 {
   "rating": 0,
-  "title": "New question TypeOrm 1",
-  "description": "Question description for test",
-  "tags": ["0fca7522-b8f8-45a3-bd27-b5c5666debe8","23d17f96-ad4b-4a28-a157-dc4e61f7c689"],
-  "authorId": "4ac81a95-5a5a-4b3b-a58a-300927fa8693"
+  "title": "New question TypeOrm 2",
+  "description": "Question description for test with user from request",
+  "tags": ["0fca7522-b8f8-45a3-bd27-b5c5666debe8","23d17f96-ad4b-4a28-a157-dc4e61f7c689"]
 }

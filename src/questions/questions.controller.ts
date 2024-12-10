@@ -32,6 +32,8 @@ import { GetQuestionResponseDto } from './dtos/get-question-response.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
 import { Role } from 'src/auth/decorator/role.decorator';
 import { RoleType } from 'src/auth/enums/role-type.enum';
+import { ActiveUser } from 'src/auth/decorator/active-user.decorator';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -43,6 +45,7 @@ export class QuestionsController {
     private readonly questionsService: QuestionsService
   ) {}
 
+  @UseGuards(AccessTokenGuard)
   @Post()
   @ApiOperation({
     summary: 'Creates a new question',
@@ -68,9 +71,10 @@ export class QuestionsController {
     description: 'Question data to create a new question',
   })
   public createQuestion(
-    @Body() createQuestionDto: CreateQuestionDto
+    @Body() createQuestionDto: CreateQuestionDto,
+    @ActiveUser() user: ActiveUserData
   ): Promise<Question> {
-    return this.questionsService.create(createQuestionDto);
+    return this.questionsService.create(createQuestionDto, user);
   }
 
   @UseGuards(AccessTokenGuard)
