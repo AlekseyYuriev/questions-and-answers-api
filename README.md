@@ -31,6 +31,12 @@ Here is exemplary view of your .env file:
 - `CACHE_URL=cache`
 - `CACHE_PORT=your PORT for cash database`
 
+- `JWT_SECRET=your JWT secret`
+- `JWT_TOKEN_AUDIENCE=your JWT audience`
+- `JWT_TOKEN_ISSUER=your JWT issure`
+- `JWT_ACCESS_TOKEN_TTL=your access token TTL`
+- `JWT_REFRESH_TOKEN_TTL=your refresh token TTL`
+
 <h2>3. Additional features</h2>
 
 - You can use HTTPYAC extension to send requests to the API from your IDE. Every module has `http` folder.

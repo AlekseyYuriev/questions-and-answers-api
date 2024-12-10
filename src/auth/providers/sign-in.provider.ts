@@ -1,3 +1,6 @@
+import Redis from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+
 import {
   forwardRef,
   Inject,
@@ -5,16 +8,12 @@ import {
   RequestTimeoutException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignInDto } from '../dtos/signin.dto';
+
 import { UsersService } from 'src/users/providers/users.service';
+import { GenerateTokensProvider } from './generate-tokens.provider';
 import { HashingProvider } from './hashing.provider';
 import { User } from 'src/users/user.entity';
-import { JwtService } from '@nestjs/jwt';
-import jwtConfig from '../config/jwt.config';
-import { ConfigType } from '@nestjs/config';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
-import { ActiveUserData } from '../interfaces/active-user-data.interface';
+import { SignInDto } from '../dtos/signin.dto';
 
 @Injectable()
 export class SignInProvider {
@@ -31,15 +30,9 @@ export class SignInProvider {
     private readonly hashingProvider: HashingProvider,
 
     /**
-     * Inject jwtService
+     * Inject generateTokensProvider
      */
-    private readonly jwtService: JwtService,
-
-    /**
-     * Inject jwtConfiguration
-     */
-    @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+    private readonly generateTokensProvider: GenerateTokensProvider,
 
     /**
      * Inject Redis
@@ -48,7 +41,9 @@ export class SignInProvider {
     private readonly redis: Redis
   ) {}
 
-  public async signIn(signInDto: SignInDto): Promise<object> {
+  public async signIn(
+    signInDto: SignInDto
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     let user: User = await this.usersService.findOneByEmail(signInDto.email);
 
     let isEqual: boolean = false;
@@ -68,24 +63,11 @@ export class SignInProvider {
       throw new UnauthorizedException('Incorrect password');
     }
 
-    const accessToken = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        email: user.email,
-        role: user.role.role,
-      } as ActiveUserData,
-      {
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-        secret: this.jwtConfiguration.secret,
-        expiresIn: this.jwtConfiguration.accessTokenTtl,
-      }
-    );
+    const { accessToken, refreshToken } =
+      await this.generateTokensProvider.generateTokens(user);
 
     await this.redis.set(`user:${user.id}:token`, accessToken, 'EX', 3600);
 
-    return {
-      accessToken,
-    };
+    return { accessToken, refreshToken };
   }
 }
