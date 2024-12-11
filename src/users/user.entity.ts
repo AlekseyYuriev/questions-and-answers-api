@@ -1,7 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { Answer } from 'src/answers/answer.entity';
-import { Question } from 'src/questions/question.entity';
-import { Role } from 'src/roles/role.entity';
 import {
   Column,
   Entity,
@@ -9,6 +6,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { Answer } from 'src/answers/answer.entity';
+import { Question } from 'src/questions/question.entity';
+import { RefreshToken } from 'src/refresh-tokens/refresh-token.entity';
+import { Role } from 'src/roles/role.entity';
 
 @Entity('User')
 export class User {
@@ -53,4 +55,9 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
+    cascade: true,
+  })
+  refreshTokens: RefreshToken[];
 }
