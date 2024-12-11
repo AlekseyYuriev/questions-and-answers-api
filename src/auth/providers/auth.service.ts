@@ -32,15 +32,15 @@ export class AuthService {
     return await this.signInProvider.signIn(signInDto);
   }
 
-  public async refreshTokens(
-    refreshTokenDto: RefreshTokenDto
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    return await this.refreshTokensProvider.refreshTokens(refreshTokenDto);
-  }
-
   public async signUp(
     signUpDto: CreateUserDto
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return await this.signUpProvider.signUp(signUpDto);
+  }
+
+  public async refreshTokens(
+    refreshTokenDto: RefreshTokenDto
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    return await this.refreshTokensProvider.refreshTokens(refreshTokenDto);
   }
 }
