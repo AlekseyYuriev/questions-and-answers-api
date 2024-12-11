@@ -13,7 +13,6 @@ import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
-import { roleType } from 'src/roles/enums/roleType';
 import { AuthService } from 'src/auth/providers/auth.service';
 import { CreateUserProvider } from './create-user.provider';
 import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
@@ -89,8 +88,9 @@ export class UsersService {
     let user = undefined;
 
     try {
-      user = await this.usersRepository.findOneBy({
-        id,
+      user = await this.usersRepository.findOne({
+        where: { id: id },
+        relations: { role: true },
       });
     } catch (error) {
       throw new RequestTimeoutException(

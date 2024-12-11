@@ -66,7 +66,18 @@ export class SignInProvider {
     const { accessToken, refreshToken } =
       await this.generateTokensProvider.generateTokens(user);
 
-    await this.redis.set(`user:${user.id}:token`, accessToken, 'EX', 3600);
+    await this.redis.set(
+      `user:${user.id}:accessToken`,
+      accessToken,
+      'EX',
+      3600
+    );
+    await this.redis.set(
+      `user:${user.id}:refreshToken`,
+      refreshToken,
+      'EX',
+      86400
+    );
 
     return { accessToken, refreshToken };
   }
