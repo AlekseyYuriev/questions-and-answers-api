@@ -1,7 +1,9 @@
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
-import Redis from 'ioredis';
+import { InjectRepository } from '@nestjs/typeorm';
 import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 import {
   forwardRef,
@@ -11,10 +13,11 @@ import {
 } from '@nestjs/common';
 
 import jwtConfig from '../config/jwt.config';
-import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { GenerateTokensProvider } from './generate-tokens.provider';
 import { UsersService } from 'src/users/providers/users.service';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
+import { RefreshTokenDto } from '../dtos/refresh-token.dto';
+import { RefreshToken } from '../refresh-token.entity';
 
 @Injectable()
 export class RefreshTokensProvider {
@@ -29,6 +32,12 @@ export class RefreshTokensProvider {
      */
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+
+    /**
+     * Inject refreshTokenRepository
+     */
+    @InjectRepository(RefreshToken)
+    private readonly refreshTokenRepository: Repository<RefreshToken>,
 
     /**
      * Inject generateTokensProvider
@@ -60,10 +69,22 @@ export class RefreshTokensProvider {
         issuer: this.jwtConfiguration.issuer,
       });
 
+      const refreshTokenEntity = await this.refreshTokenRepository.findOne({
+        where: { user: { id: sub } },
+        relations: ['user'],
+      });
+
+      if (!refreshTokenEntity) {
+        throw new UnauthorizedException();
+      }
+
       const user = await this.usersService.findOneById(sub);
 
       const { accessToken, refreshToken } =
         await this.generateTokensProvider.generateTokens(user);
+
+      refreshTokenEntity.token = refreshToken;
+      await this.refreshTokenRepository.save(refreshTokenEntity);
 
       await this.redis.set(
         `user:${user.id}:accessToken`,

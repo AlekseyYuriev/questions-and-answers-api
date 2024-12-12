@@ -1,5 +1,7 @@
-import Redis from 'ioredis';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 import {
   forwardRef,
@@ -13,6 +15,7 @@ import { UsersService } from 'src/users/providers/users.service';
 import { GenerateTokensProvider } from './generate-tokens.provider';
 import { HashingProvider } from './hashing.provider';
 import { User } from 'src/users/user.entity';
+import { RefreshToken } from '../refresh-token.entity';
 import { SignInDto } from '../dtos/signin.dto';
 
 @Injectable()
@@ -33,6 +36,12 @@ export class SignInProvider {
      * Inject generateTokensProvider
      */
     private readonly generateTokensProvider: GenerateTokensProvider,
+
+    /**
+     * Inject refreshTokenRepository
+     */
+    @InjectRepository(RefreshToken)
+    private readonly refreshTokenRepository: Repository<RefreshToken>,
 
     /**
      * Inject Redis
@@ -65,6 +74,22 @@ export class SignInProvider {
 
     const { accessToken, refreshToken } =
       await this.generateTokensProvider.generateTokens(user);
+
+    const existingRefreshToken = await this.refreshTokenRepository.findOne({
+      where: { user: { email: signInDto.email } },
+      relations: ['user'],
+    });
+
+    if (!existingRefreshToken) {
+      const refreshTokenEntity = this.refreshTokenRepository.create({
+        token: refreshToken,
+        user: user,
+      });
+      await this.refreshTokenRepository.save(refreshTokenEntity);
+    } else {
+      existingRefreshToken.token = refreshToken;
+      await this.refreshTokenRepository.save(existingRefreshToken);
+    }
 
     await this.redis.set(
       `user:${user.id}:accessToken`,

@@ -54,7 +54,10 @@ export class GenerateTokensProvider {
         }
       ),
 
-      this.signToken(user.id, this.jwtConfiguration.refreshTokenTtl),
+      this.signToken<Partial<ActiveUserData>>(
+        user.id,
+        this.jwtConfiguration.refreshTokenTtl
+      ),
     ]);
 
     return {
