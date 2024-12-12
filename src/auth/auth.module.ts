@@ -12,6 +12,8 @@ import { RefreshTokensProvider } from './providers/refresh-tokens.provider';
 import { SignUpProvider } from './providers/sign-up.provider';
 import { LogoutProvider } from './providers/logout.provider';
 import jwtConfig from './config/jwt.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RefreshToken } from './refresh-token.entity';
 
 @Module({
   controllers: [AuthController],
@@ -28,6 +30,7 @@ import jwtConfig from './config/jwt.config';
     LogoutProvider,
   ],
   imports: [
+    TypeOrmModule.forFeature([RefreshToken]),
     forwardRef(() => UsersModule),
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),

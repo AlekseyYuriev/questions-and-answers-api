@@ -17,7 +17,6 @@ import { QuestionsModule } from './questions/questions.module';
 import { AnswersModule } from './answers/answers.module';
 import { TagsModule } from './tags/tags.module';
 import { AuthModule } from './auth/auth.module';
-import { RefreshTokensModule } from './refresh-tokens/refresh-tokens.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -41,7 +40,6 @@ const ENV = process.env.NODE_ENV;
     TagsModule,
     RolesModule,
     AuthModule,
-    RefreshTokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],

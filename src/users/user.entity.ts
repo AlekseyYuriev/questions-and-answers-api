@@ -9,7 +9,7 @@ import {
 
 import { Answer } from 'src/answers/answer.entity';
 import { Question } from 'src/questions/question.entity';
-import { RefreshToken } from 'src/refresh-tokens/refresh-token.entity';
+import { RefreshToken } from 'src/auth/refresh-token.entity';
 import { Role } from 'src/roles/role.entity';
 
 @Entity('User')
