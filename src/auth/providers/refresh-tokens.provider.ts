@@ -21,8 +21,21 @@ import { ActiveUserData } from '../interfaces/active-user-data.interface';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { RefreshToken } from '../refresh-token.entity';
 
+/**
+ * The `RefreshTokensProvider` is responsible for handling token refresh operations,
+ * generating new tokens, and managing refresh token storage.
+ */
 @Injectable()
 export class RefreshTokensProvider {
+  /**
+   * Creates an instance of RefreshTokensProvider.
+   * @param jwtService - The service for handling JWT operations.
+   * @param jwtConfiguration - The JWT configuration settings.
+   * @param refreshTokenRepository - The repository for managing refresh tokens in the database.
+   * @param generateTokensProvider - The provider for generating access and refresh tokens.
+   * @param usersService - The service for managing user-related operations.
+   * @param redis - The Redis client for caching tokens.
+   */
   constructor(
     /**
      * Inject jwtService
@@ -59,6 +72,15 @@ export class RefreshTokensProvider {
     private readonly redis: Redis
   ) {}
 
+  /**
+   * Refreshes authentication tokens using the provided refresh token,
+   * updates the refresh token in both the database and Redis cache.
+   *
+   * @param refreshTokenDto - The data transfer object containing the refresh token.
+   * @returns A promise that resolves to an object containing the new access token and refresh token.
+   * @throws UnauthorizedException If the refresh token is not found or invalid.
+   * @throws HttpException If an error occurs during token verification, user retrieval, or token storage.
+   */
   public async refreshTokens(
     refreshTokenDto: RefreshTokenDto
   ): Promise<{ accessToken: string; refreshToken: string }> {

@@ -25,9 +25,19 @@ import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { AuthTokenResponseDto } from './dtos/auth-token-response.dto';
 import { LogoutResponseDto } from './dtos/logout-response.dto';
 
+/**
+ * The `AuthController` handles authentication-related endpoints.
+ *
+ * Provides operations for user sign-in, sign-up, logout, and token refreshing.
+ */
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
+  /**
+   * Constructs the `AuthController` and injects dependencies.
+   *
+   * @param authService Service that handles authentication logic.
+   */
   constructor(
     /**
      * Injecting Auth Service
@@ -35,6 +45,14 @@ export class AuthController {
     private readonly authService: AuthService
   ) {}
 
+  /**
+   * Authenticates a user and returns access and refresh tokens.
+   *
+   * @param signInDto User credentials for signing in.
+   * @returns An object containing access and refresh tokens.
+   * @throws `UnauthorizedException` if credentials are invalid.
+   * @throws `RequestTimeoutException` if the database connection fails.
+   */
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -65,6 +83,14 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
+  /**
+   * Registers a new user and returns access and refresh tokens.
+   *
+   * @param signUpDto User details for registration.
+   * @returns An object containing access and refresh tokens.
+   * @throws `BadRequestException` if user registration fails.
+   * @throws `RequestTimeoutException` if the database connection fails.
+   */
   @Post('sign-up')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -96,6 +122,14 @@ export class AuthController {
     return this.authService.signUp(signUpDto);
   }
 
+  /**
+   * Logs out a user by invalidating their refresh token.
+   *
+   * @param refreshTokenDto Refresh token to invalidate.
+   * @returns A confirmation message.
+   * @throws `UnauthorizedException` if the refresh token is invalid.
+   * @throws `RequestTimeoutException` if the database connection fails.
+   */
   @UseGuards(AccessTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
@@ -125,6 +159,14 @@ export class AuthController {
     return this.authService.logout(refreshTokenDto);
   }
 
+  /**
+   * Refreshes the access and refresh tokens using a valid refresh token.
+   *
+   * @param refreshTokenDto Valid refresh token for generating new tokens.
+   * @returns An object containing new access and refresh tokens.
+   * @throws `UnauthorizedException` if the refresh token is invalid or expired.
+   * @throws `RequestTimeoutException` if the database connection fails.
+   */
   @Post('refresh-tokens')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

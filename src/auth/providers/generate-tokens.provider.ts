@@ -7,8 +7,17 @@ import jwtConfig from '../config/jwt.config';
 import { User } from 'src/users/user.entity';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
 
+/**
+ * The `GenerateTokensProvider` is responsible for generating access and refresh tokens
+ * for user authentication and managing the signing of tokens.
+ */
 @Injectable()
 export class GenerateTokensProvider {
+  /**
+   * Creates an instance of GenerateTokensProvider.
+   * @param jwtService - The service for handling JWT operations.
+   * @param jwtConfiguration - The JWT configuration settings.
+   */
   constructor(
     /**
      * Inject jwtService
@@ -22,6 +31,14 @@ export class GenerateTokensProvider {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
   ) {}
 
+  /**
+   * Signs a token with the provided user ID, expiration time, and additional payload.
+   * @param userId - The ID of the user.
+   * @param expiresIn - The expiration time of the token in seconds.
+   * @param payload - Optional additional payload to include in the token.
+   * @returns A promise that resolves to the signed token string.
+   * @throws RequestTimeoutException If signing the token fails.
+   */
   public async signToken<T>(
     userId: string,
     expiresIn: number,
@@ -47,6 +64,12 @@ export class GenerateTokensProvider {
     }
   }
 
+  /**
+   * Generates access and refresh tokens for the provided user.
+   * @param user - The user entity for which to generate tokens.
+   * @returns A promise that resolves to an object containing the access token and refresh token.
+   * @throws RequestTimeoutException If generating the tokens fails.
+   */
   public async generateTokens(
     user: User
   ): Promise<{ accessToken: string; refreshToken: string }> {

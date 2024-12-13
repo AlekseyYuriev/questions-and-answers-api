@@ -15,8 +15,18 @@ import {
 import jwtConfig from 'src/auth/config/jwt.config';
 import { REQUEST_USER_KEY } from 'src/auth/constants/auth.constants';
 
+/**
+ * Guard to handle role-based access control in the application.
+ * Ensures that the user has the required role to access the resource.
+ */
 @Injectable()
 export class RolesGuard implements CanActivate {
+  /**
+   * Creates an instance of RolesGuard.
+   * @param jwtService - The service for handling JWT operations.
+   * @param jwtConfiguration - The JWT configuration settings.
+   * @param redis - The Redis client for caching tokens.
+   */
   constructor(
     /**
      * Inject jwtService
@@ -35,6 +45,12 @@ export class RolesGuard implements CanActivate {
     @InjectRedis() private readonly redis: Redis
   ) {}
 
+  /**
+   * Determines whether the current user has the necessary role to access the resource.
+   * @param context - The execution context containing the request and response objects.
+   * @returns A promise that resolves to a boolean indicating whether the user can activate the route.
+   * @throws UnauthorizedException If the token is missing, invalid, or the user does not have the required role.
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
@@ -78,6 +94,11 @@ export class RolesGuard implements CanActivate {
     return true;
   }
 
+  /**
+   * Extracts the token from the request headers.
+   * @param request - The HTTP request object.
+   * @returns The token string if present, otherwise undefined.
+   */
   private extractRequestFromHeader(request: Request): string | undefined {
     const [_, token] = request.headers.authorization?.split(' ') ?? [];
     return token;

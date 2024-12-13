@@ -20,8 +20,21 @@ import { User } from 'src/users/user.entity';
 import { RefreshToken } from '../refresh-token.entity';
 import { SignInDto } from '../dtos/signin.dto';
 
+/**
+ * The `SignInProvider` is responsible for handling user authentication
+ * by verifying credentials, generating tokens, and managing refresh token storage.
+ */
 @Injectable()
 export class SignInProvider {
+  /**
+   * Creates an instance of SignInProvider.
+   * @param usersService The service for managing user-related operations.
+   * @param hashingProvider The provider for hashing and comparing passwords.
+   * @param generateTokensProvider The provider for generating access and refresh tokens.
+   * @param refreshTokenRepository The repository for managing refresh tokens in the database.
+   * @param redis The Redis client for caching tokens.
+   * @param jwtConfiguration The JWT configuration settings.
+   */
   constructor(
     /**
      * Inject usersService
@@ -58,6 +71,15 @@ export class SignInProvider {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
   ) {}
 
+  /**
+   * Authenticates a user based on the provided credentials, generates tokens,
+   * and updates the refresh token in both the database and Redis cache.
+   *
+   * @param signInDto The user credentials for signing in.
+   * @returns A promise that resolves to an object containing the access token and refresh token.
+   * @throws UnauthorizedException If the password is incorrect.
+   * @throws RequestTimeoutException If there is an error during password comparison or database access.
+   */
   public async signIn(
     signInDto: SignInDto
   ): Promise<{ accessToken: string; refreshToken: string }> {

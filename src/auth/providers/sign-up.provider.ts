@@ -18,8 +18,20 @@ import { GenerateTokensProvider } from './generate-tokens.provider';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { RefreshToken } from '../refresh-token.entity';
 
+/**
+ * The `SignUpProvider` is responsible for handling user registration,
+ * generating authentication tokens, and managing refresh token storage.
+ */
 @Injectable()
 export class SignUpProvider {
+  /**
+   * Creates an instance of SignUpProvider.
+   * @param usersService - The service for managing user-related operations.
+   * @param generateTokensProvider - The provider for generating access and refresh tokens.
+   * @param refreshTokenRepository - The repository for managing refresh tokens in the database.
+   * @param redis - The Redis client for caching tokens.
+   * @param jwtConfiguration - The JWT configuration settings.
+   */
   constructor(
     /**
      * Inject usersService
@@ -51,6 +63,14 @@ export class SignUpProvider {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
   ) {}
 
+  /**
+   * Registers a new user, generates authentication tokens,
+   * and updates the refresh token in both the database and Redis cache.
+   *
+   * @param signUpDto - The data transfer object containing user registration details.
+   * @returns A promise that resolves to an object containing the access token and refresh token.
+   * @throws HttpException If an error occurs during user creation, token generation, or database access.
+   */
   public async signUp(
     signUpDto: CreateUserDto
   ): Promise<{ accessToken: string; refreshToken: string }> {

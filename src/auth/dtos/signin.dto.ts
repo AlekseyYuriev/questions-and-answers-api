@@ -8,7 +8,14 @@ import {
   MinLength,
 } from 'class-validator';
 
+/**
+ * DTO for user sign-in, containing email and password.
+ */
 export class SignInDto {
+  /**
+   * The email address of the user.
+   * @example 'mark@holden.com'
+   */
   @ApiProperty({
     type: 'string',
     description: 'This is email of the user',
@@ -18,6 +25,11 @@ export class SignInDto {
   @IsNotEmpty()
   email: string;
 
+  /**
+   * The password of the user account.
+   * Must be at least 8 characters, include one letter, one number, and one special character.
+   * @example 'Password789!'
+   */
   @ApiProperty({
     type: 'string',
     description: 'This is password of the user account',
