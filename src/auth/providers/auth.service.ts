@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
 import { SignInProvider } from './sign-in.provider';
+import { SignUpProvider } from './sign-up.provider';
+import { LogoutProvider } from './logout.provider';
 import { RefreshTokensProvider } from './refresh-tokens.provider';
 import { SignInDto } from '../dtos/signin.dto';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-import { SignUpProvider } from './sign-up.provider';
-import { LogoutProvider } from './logout.provider';
 
 @Injectable()
 export class AuthService {
@@ -32,22 +32,36 @@ export class AuthService {
     private readonly refreshTokensProvider: RefreshTokensProvider
   ) {}
 
+  /**
+   * Public method responsible for user authentication
+   */
   public async signIn(
     signInDto: SignInDto
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return await this.signInProvider.signIn(signInDto);
   }
 
+  /**
+   * Public method to register a new user
+   */
   public async signUp(
     signUpDto: CreateUserDto
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return await this.signUpProvider.signUp(signUpDto);
   }
 
-  public async logout(refreshTokenDto: RefreshTokenDto) {
+  /**
+   * Public method to logout a user
+   */
+  public async logout(
+    refreshTokenDto: RefreshTokenDto
+  ): Promise<{ message: string }> {
     return await this.logoutProvider.logout(refreshTokenDto);
   }
 
+  /**
+   * Public method to refresh access and refresh tokens
+   */
   public async refreshTokens(
     refreshTokenDto: RefreshTokenDto
   ): Promise<{ accessToken: string; refreshToken: string }> {

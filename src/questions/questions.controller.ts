@@ -15,6 +15,7 @@ import {
   DefaultValuePipe,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseIntPipe,
   ParseUUIDPipe,
@@ -53,7 +54,7 @@ export class QuestionsController {
     summary: 'Creates a new question',
   })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description:
       'You get a 201 response if your question is created successfully',
     type: CreateQuestionResponseDto,
@@ -86,7 +87,7 @@ export class QuestionsController {
     summary: 'Fetches a list of published questions on the application',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Questions fetched successfully based on the query',
     type: GetQuestionResponseDto,
     isArray: true,
@@ -135,7 +136,7 @@ export class QuestionsController {
     summary: 'Updates an existing question',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'A 200 response if the question is updated successfully',
     type: CreateQuestionResponseDto,
   })
@@ -164,7 +165,7 @@ export class QuestionsController {
     summary: 'Deletes an existing question',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'A 200 response if the question is deleted successfully',
     example: {
       deleted: true,

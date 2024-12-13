@@ -1,17 +1,19 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   BadRequestException,
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
+
 import { UsersService } from 'src/users/providers/users.service';
-import { CreateQuestionDto } from '../dtos/create-question.dto';
-import { Repository } from 'typeorm';
-import { Question } from '../question.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { GetQuestionsParamDto } from '../dtos/get-questions-param.dto';
 import { TagsService } from 'src/tags/providers/tags.service';
-import { PatchQuestionDto } from '../dtos/patch-question.dto';
 import { CreateQuestionProvider } from './create-question.provider';
+import { Question } from '../question.entity';
+import { CreateQuestionDto } from '../dtos/create-question.dto';
+import { GetQuestionsParamDto } from '../dtos/get-questions-param.dto';
+import { PatchQuestionDto } from '../dtos/patch-question.dto';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Injectable()

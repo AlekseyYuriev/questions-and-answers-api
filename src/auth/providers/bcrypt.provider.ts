@@ -1,15 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { HashingProvider } from './hashing.provider';
 import * as bcrypt from 'bcrypt';
+
+import { Injectable, RequestTimeoutException } from '@nestjs/common';
+
+import { HashingProvider } from './hashing.provider';
 
 @Injectable()
 export class BcryptProvider implements HashingProvider {
   public async hashPassword(data: string | Buffer): Promise<string> {
-    const salt = await bcrypt.genSalt();
-    return bcrypt.hash(data, salt);
+    try {
+      const salt = await bcrypt.genSalt();
+      return await bcrypt.hash(data, salt);
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: 'Failed to hash password',
+      });
+    }
   }
 
-  comparePassword(data: string | Buffer, encrypred: string): Promise<boolean> {
-    return bcrypt.compare(data, encrypred);
+  public async comparePassword(
+    data: string | Buffer,
+    encrypred: string
+  ): Promise<boolean> {
+    try {
+      return await bcrypt.compare(data, encrypred);
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: 'Could not compare passwords',
+      });
+    }
   }
 }

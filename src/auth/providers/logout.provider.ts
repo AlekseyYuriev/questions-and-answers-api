@@ -45,7 +45,9 @@ export class LogoutProvider {
     private readonly redis: Redis
   ) {}
 
-  public async logout(refreshTokenDto: RefreshTokenDto) {
+  public async logout(
+    refreshTokenDto: RefreshTokenDto
+  ): Promise<{ message: string }> {
     try {
       const { sub } = await this.jwtService.verifyAsync<
         Pick<ActiveUserData, 'sub'>
@@ -64,6 +66,10 @@ export class LogoutProvider {
       }
 
       const accessToken = await this.redis.get(`user:${sub}:accessToken`);
+
+      if (!accessToken) {
+        throw new UnauthorizedException();
+      }
 
       await this.redis.set(
         `blacklist:${accessToken}`,

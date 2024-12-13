@@ -1,7 +1,7 @@
 import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, RequestTimeoutException } from '@nestjs/common';
 
 import jwtConfig from '../config/jwt.config';
 import { User } from 'src/users/user.entity';
@@ -27,42 +27,54 @@ export class GenerateTokensProvider {
     expiresIn: number,
     payload?: T
   ): Promise<string> {
-    return await this.jwtService.signAsync(
-      {
-        sub: userId,
-        ...payload,
-      },
-      {
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-        secret: this.jwtConfiguration.secret,
-        expiresIn: expiresIn,
-      }
-    );
+    try {
+      return await this.jwtService.signAsync(
+        {
+          sub: userId,
+          ...payload,
+        },
+        {
+          audience: this.jwtConfiguration.audience,
+          issuer: this.jwtConfiguration.issuer,
+          secret: this.jwtConfiguration.secret,
+          expiresIn: expiresIn,
+        }
+      );
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: 'Failed to sign token',
+      });
+    }
   }
 
   public async generateTokens(
     user: User
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const [accessToken, refreshToken] = await Promise.all([
-      this.signToken<Partial<ActiveUserData>>(
-        user.id,
-        this.jwtConfiguration.accessTokenTtl,
-        {
-          email: user.email,
-          role: user.role.role,
-        }
-      ),
+    try {
+      const [accessToken, refreshToken] = await Promise.all([
+        this.signToken<Partial<ActiveUserData>>(
+          user.id,
+          this.jwtConfiguration.accessTokenTtl,
+          {
+            email: user.email,
+            role: user.role.role,
+          }
+        ),
 
-      this.signToken<Partial<ActiveUserData>>(
-        user.id,
-        this.jwtConfiguration.refreshTokenTtl
-      ),
-    ]);
+        this.signToken<Partial<ActiveUserData>>(
+          user.id,
+          this.jwtConfiguration.refreshTokenTtl
+        ),
+      ]);
 
-    return {
-      accessToken,
-      refreshToken,
-    };
+      return {
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: 'Failed to generate tokens',
+      });
+    }
   }
 }

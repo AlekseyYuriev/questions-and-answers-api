@@ -7,6 +7,8 @@ import Redis from 'ioredis';
 
 import {
   forwardRef,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   UnauthorizedException,
@@ -101,7 +103,15 @@ export class RefreshTokensProvider {
 
       return { accessToken, refreshToken };
     } catch (error) {
-      throw new UnauthorizedException(error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      const errorStatusCode =
+        error instanceof HttpException
+          ? error.getStatus()
+          : HttpStatus.INTERNAL_SERVER_ERROR;
+
+      throw new HttpException(errorMessage, errorStatusCode);
     }
   }
 }

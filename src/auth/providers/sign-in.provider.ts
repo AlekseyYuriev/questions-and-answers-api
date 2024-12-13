@@ -83,34 +83,40 @@ export class SignInProvider {
     const { accessToken, refreshToken } =
       await this.generateTokensProvider.generateTokens(user);
 
-    const existingRefreshToken = await this.refreshTokenRepository.findOne({
-      where: { user: { email: signInDto.email } },
-      relations: ['user'],
-    });
-
-    if (!existingRefreshToken) {
-      const refreshTokenEntity = this.refreshTokenRepository.create({
-        token: refreshToken,
-        user: user,
+    try {
+      const existingRefreshToken = await this.refreshTokenRepository.findOne({
+        where: { user: { email: signInDto.email } },
+        relations: ['user'],
       });
-      await this.refreshTokenRepository.save(refreshTokenEntity);
-    } else {
-      existingRefreshToken.token = refreshToken;
-      await this.refreshTokenRepository.save(existingRefreshToken);
-    }
 
-    await this.redis.set(
-      `user:${user.id}:accessToken`,
-      accessToken,
-      'EX',
-      this.jwtConfiguration.accessTokenTtl
-    );
-    await this.redis.set(
-      `user:${user.id}:refreshToken`,
-      refreshToken,
-      'EX',
-      this.jwtConfiguration.refreshTokenTtl
-    );
+      if (!existingRefreshToken) {
+        const refreshTokenEntity = this.refreshTokenRepository.create({
+          token: refreshToken,
+          user: user,
+        });
+        await this.refreshTokenRepository.save(refreshTokenEntity);
+      } else {
+        existingRefreshToken.token = refreshToken;
+        await this.refreshTokenRepository.save(existingRefreshToken);
+      }
+
+      await this.redis.set(
+        `user:${user.id}:accessToken`,
+        accessToken,
+        'EX',
+        this.jwtConfiguration.accessTokenTtl
+      );
+      await this.redis.set(
+        `user:${user.id}:refreshToken`,
+        refreshToken,
+        'EX',
+        this.jwtConfiguration.refreshTokenTtl
+      );
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: 'Error connecting to the database.',
+      });
+    }
 
     return { accessToken, refreshToken };
   }
