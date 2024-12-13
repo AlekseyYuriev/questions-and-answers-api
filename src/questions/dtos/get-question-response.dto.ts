@@ -16,7 +16,7 @@ import { Tag } from 'src/tags/tag.entity';
 export class GetQuestionResponseDto {
   @ApiProperty({
     type: 'string',
-    description: 'This is the ID of the created question',
+    description: 'This is the ID of the published question',
     example: '37e2e510-1d79-44c4-83d3-ea4548ad68c6',
   })
   @IsUUID()

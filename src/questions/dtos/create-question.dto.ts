@@ -5,7 +5,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
   MaxLength,
   Min,
   MinLength,
@@ -55,14 +54,4 @@ export class CreateQuestionDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
-
-  @ApiProperty({
-    type: 'string',
-    required: true,
-    description: "That's the ID of the author of the question",
-    example: 'd0cc8618-66dc-4448-8c5a-9de59c93461d',
-  })
-  @IsNotEmpty()
-  @IsUUID()
-  authorId: string;
 }

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { CreateTagDto } from '../dtos/create-tag.dto';
 import { In, Repository } from 'typeorm';
 import { Tag } from '../tag.entity';
@@ -46,5 +50,29 @@ export class TagsService {
     await this.tagsRepository.delete(id);
 
     return { deleted: true, id };
+  }
+
+  /**
+   * Public method responsible for handling GET request for '/questions' endpoint
+   */
+  public async findAll(): Promise<Tag[]> {
+    let tags = undefined;
+
+    try {
+      tags = await this.tagsRepository.find();
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment, please try again later.',
+        {
+          description: 'Error connecting to the database.',
+        }
+      );
+    }
+
+    if (!tags || tags.length <= 0) {
+      throw new BadRequestException('There are no tags in the database.');
+    }
+
+    return tags;
   }
 }

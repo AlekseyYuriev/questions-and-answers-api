@@ -1,17 +1,20 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
+  forwardRef,
+  Inject,
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
-import { GetUsersParamDto } from '../dtos/get-users-param.dto';
-import { Repository } from 'typeorm';
-import { User } from '../user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from '../dtos/create-user.dto';
+
 import { RolesService } from 'src/roles/providers/roles.service';
-import { roleType } from 'src/roles/enums/roleType';
+import { AuthService } from 'src/auth/providers/auth.service';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
+import { User } from '../user.entity';
+import { CreateUserDto } from '../dtos/create-user.dto';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -20,7 +23,13 @@ import { roleType } from 'src/roles/enums/roleType';
 export class UsersService {
   constructor(
     /**
-     * Inject RolesService
+     * Inject Auth Service
+     */
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+
+    /**
+     * Inject Roles Service
      */
     private readonly rolesService: RolesService,
 
@@ -28,90 +37,24 @@ export class UsersService {
      * Injecting usersRepository
      */
     @InjectRepository(User)
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
+
+    /**
+     * Inject createUserProvider
+     */
+    private readonly createUserProvider: CreateUserProvider,
+
+    /**
+     * Inject findOneUserByEmailProvider
+     */
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider
   ) {}
 
   /**
    * Public method responsible for creating a new user
    */
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
-    let existingUser = undefined;
-    let role = undefined;
-
-    try {
-      existingUser = await this.usersRepository.findOne({
-        where: { email: createUserDto.email },
-      });
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database',
-        }
-      );
-    }
-
-    if (existingUser) {
-      throw new BadRequestException(
-        'The user already exists, please check your email.'
-      );
-    }
-
-    try {
-      role = await this.rolesService.getRoleByValue(roleType.USER);
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database',
-        }
-      );
-    }
-
-    if (!role) {
-      throw new BadRequestException('The role does not exist.');
-    }
-
-    let newUser = this.usersRepository.create({
-      ...createUserDto,
-      role: role,
-    });
-
-    try {
-      newUser = await this.usersRepository.save(newUser);
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database.',
-        }
-      );
-    }
-
-    return newUser;
-  }
-
-  /**
-   * Public method responsible for handling GET request for '/users' endpoint
-   */
-  public async findAll(
-    getUserParamDto: GetUsersParamDto,
-    limit: number,
-    page: number
-  ): Promise<HttpException> {
-    throw new HttpException(
-      {
-        status: HttpStatus.MOVED_PERMANENTLY,
-        error: 'The API endpoint does not exist.',
-        fileName: 'users.service.ts',
-        lineNumber: 91,
-      },
-      HttpStatus.MOVED_PERMANENTLY,
-      {
-        cause: new Error(),
-        description: 'Occured because the API endpoint was permanently moved.',
-      }
-    );
+    return this.createUserProvider.createUser(createUserDto);
   }
 
   /**
@@ -121,8 +64,9 @@ export class UsersService {
     let user = undefined;
 
     try {
-      user = await this.usersRepository.findOneBy({
-        id,
+      user = await this.usersRepository.findOne({
+        where: { id: id },
+        relations: { role: true },
       });
     } catch (error) {
       throw new RequestTimeoutException(
@@ -138,5 +82,12 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  /**
+   * Public method used to find one user using the email of the user
+   */
+  public async findOneByEmail(email: string): Promise<User> {
+    return await this.findOneUserByEmailProvider.findOneByEmail(email);
   }
 }

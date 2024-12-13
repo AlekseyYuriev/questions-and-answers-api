@@ -1,28 +1,31 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   BadRequestException,
-  Body,
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
+
 import { UsersService } from 'src/users/providers/users.service';
-import { CreateQuestionDto } from '../dtos/create-question.dto';
-import { Repository } from 'typeorm';
-import { Question } from '../question.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { GetQuestionsParamDto } from '../dtos/get-questions-param.dto';
 import { TagsService } from 'src/tags/providers/tags.service';
+import { CreateQuestionProvider } from './create-question.provider';
+import { Question } from '../question.entity';
+import { CreateQuestionDto } from '../dtos/create-question.dto';
+import { GetQuestionsParamDto } from '../dtos/get-questions-param.dto';
 import { PatchQuestionDto } from '../dtos/patch-question.dto';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Injectable()
 export class QuestionsService {
   constructor(
     /**
-     * Inject UsersService
+     * Inject Users Service
      */
     private readonly usersService: UsersService,
 
     /**
-     * Inject TagsService
+     * Inject Tags Service
      */
     private readonly tagsService: TagsService,
 
@@ -30,51 +33,22 @@ export class QuestionsService {
      * Inject questionsRepository
      */
     @InjectRepository(Question)
-    private readonly questionsRepository: Repository<Question>
+    private readonly questionsRepository: Repository<Question>,
+
+    /**
+     * Inject createQuestionProvider
+     */
+    private readonly createQuestionProvider: CreateQuestionProvider
   ) {}
 
   /**
    * Public method responsible for creating a new question
    */
   public async create(
-    @Body() createQuestionDto: CreateQuestionDto
+    createQuestionDto: CreateQuestionDto,
+    user: ActiveUserData
   ): Promise<Question> {
-    let question = undefined;
-
-    try {
-      const [author, tags] = await Promise.all([
-        this.usersService.findOneById(createQuestionDto.authorId),
-        this.tagsService.findMultipleTags(createQuestionDto.tags),
-      ]);
-
-      if (!tags || tags.length !== createQuestionDto.tags.length) {
-        throw new BadRequestException(
-          'Please check your tag IDs and ensure they are correct.'
-        );
-      }
-
-      question = this.questionsRepository.create({
-        ...createQuestionDto,
-        author: author,
-        tags: tags,
-      });
-
-      question = await this.questionsRepository.save(question);
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw new BadRequestException(
-          'Please check your user ID and tag IDs and ensure they are correct.'
-        );
-      }
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment, please try again later.',
-        {
-          description: 'Error connecting to the database',
-        }
-      );
-    }
-
-    return question;
+    return await this.createQuestionProvider.create(createQuestionDto, user);
   }
 
   /**

@@ -1,18 +1,4 @@
 import {
-  Body,
-  Controller,
-  DefaultValuePipe,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-import { QuestionsService } from './providers/questions.service';
-import {
   ApiBadRequestResponse,
   ApiBody,
   ApiOperation,
@@ -22,12 +8,35 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+
+import { QuestionsService } from './providers/questions.service';
+import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { ActiveUser } from 'src/auth/decorator/active-user.decorator';
+import { Question } from './question.entity';
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { PatchQuestionDto } from './dtos/patch-question.dto';
 import { GetQuestionsParamDto } from './dtos/get-questions-param.dto';
-import { Question } from './question.entity';
 import { CreateQuestionResponseDto } from './dtos/create-question-response.dto';
 import { GetQuestionResponseDto } from './dtos/get-question-response.dto';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
+import { RoleType } from 'src/auth/enums/role-type.enum';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -39,12 +48,13 @@ export class QuestionsController {
     private readonly questionsService: QuestionsService
   ) {}
 
+  @UseGuards(AccessTokenGuard)
   @Post()
   @ApiOperation({
     summary: 'Creates a new question',
   })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description:
       'You get a 201 response if your question is created successfully',
     type: CreateQuestionResponseDto,
@@ -64,17 +74,20 @@ export class QuestionsController {
     description: 'Question data to create a new question',
   })
   public createQuestion(
-    @Body() createQuestionDto: CreateQuestionDto
+    @Body() createQuestionDto: CreateQuestionDto,
+    @ActiveUser() user: ActiveUserData
   ): Promise<Question> {
-    return this.questionsService.create(createQuestionDto);
+    return this.questionsService.create(createQuestionDto, user);
   }
 
+  @UseGuards(AccessTokenGuard)
+  @Role(RoleType.User)
   @Get('/:id?')
   @ApiOperation({
     summary: 'Fetches a list of published questions on the application',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Questions fetched successfully based on the query',
     type: GetQuestionResponseDto,
     isArray: true,
@@ -123,7 +136,7 @@ export class QuestionsController {
     summary: 'Updates an existing question',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'A 200 response if the question is updated successfully',
     type: CreateQuestionResponseDto,
   })
@@ -152,7 +165,7 @@ export class QuestionsController {
     summary: 'Deletes an existing question',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'A 200 response if the question is deleted successfully',
     example: {
       deleted: true,
