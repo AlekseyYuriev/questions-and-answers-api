@@ -1,4 +1,13 @@
 import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOperation,
+  ApiRequestTimeoutResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import {
   Body,
   Controller,
   Delete,
@@ -8,31 +17,28 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiOperation,
-  ApiRequestTimeoutResponse,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { CreateTagDto } from './dtos/create-tag.dto';
+
 import { TagsService } from './providers/tags.service';
-import { Tag } from './tag.entity';
-import { Role } from 'src/auth/decorator/role.decorator';
-import { RoleType } from 'src/auth/enums/role-type.enum';
 import { AuthenticationGuard } from 'src/auth/guards/authentication/authentication.guard';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { Tag } from './tag.entity';
+import { CreateTagDto } from './dtos/create-tag.dto';
+import { CreateTagResponseDto } from './dtos/create-tag-response.dto';
+import { RoleType } from 'src/auth/enums/role-type.enum';
 
 @Controller('tags')
 @ApiTags('Tags')
 export class TagsController {
   constructor(
     /**
-     * Inject TagsService
+     * Inject Tags Service
      */
     private readonly TagsService: TagsService
   ) {}
 
+  /**
+   * Public method responsible for creating a new tag
+   */
   @Role(RoleType.Admin)
   @UseGuards(AuthenticationGuard)
   @Post()
@@ -42,6 +48,7 @@ export class TagsController {
   @ApiResponse({
     status: 201,
     description: 'You get a 201 response if your tag is created successfully',
+    type: CreateTagResponseDto,
   })
   @ApiBody({
     required: true,
@@ -75,7 +82,7 @@ export class TagsController {
   @ApiResponse({
     status: 200,
     description: 'Questions fetched successfully based on the query',
-    // type: GetQuestionResponseDto,
+    type: CreateTagResponseDto,
     isArray: true,
   })
   @ApiRequestTimeoutResponse({

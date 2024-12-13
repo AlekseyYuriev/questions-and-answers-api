@@ -1,13 +1,16 @@
 import {
   CanActivate,
   ExecutionContext,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+
 import { AccessTokenGuard } from '../access-token/access-token.guard';
-import { RoleType } from 'src/auth/enums/role-type.enum';
 import { RolesGuard } from '../roles/roles.guard';
+import { RoleType } from 'src/auth/enums/role-type.enum';
 import { ROLE_TYPE_KEY } from 'src/auth/constants/auth.constants';
 
 @Injectable()
@@ -34,7 +37,7 @@ export class AuthenticationGuard implements CanActivate {
     private readonly accessTokenGuard: AccessTokenGuard,
 
     /**
-     * Inject AccessTokenGuard
+     * Inject RolesGuard
      */
     private readonly rolesGuard: RolesGuard
   ) {}
@@ -55,8 +58,16 @@ export class AuthenticationGuard implements CanActivate {
     for (const instance of guards) {
       const canActivate = await Promise.resolve(
         instance.canActivate(context)
-      ).catch((err) => {
-        error: err;
+      ).catch((error) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+
+        const errorStatusCode =
+          error instanceof HttpException
+            ? error.getStatus()
+            : HttpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new HttpException(errorMessage, errorStatusCode);
       });
 
       if (canActivate) {

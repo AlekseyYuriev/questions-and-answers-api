@@ -1,4 +1,15 @@
 import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiRequestTimeoutResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import {
   Body,
   Controller,
   DefaultValuePipe,
@@ -12,28 +23,19 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+
 import { QuestionsService } from './providers/questions.service';
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiRequestTimeoutResponse,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { ActiveUser } from 'src/auth/decorator/active-user.decorator';
+import { Question } from './question.entity';
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { PatchQuestionDto } from './dtos/patch-question.dto';
 import { GetQuestionsParamDto } from './dtos/get-questions-param.dto';
-import { Question } from './question.entity';
 import { CreateQuestionResponseDto } from './dtos/create-question-response.dto';
 import { GetQuestionResponseDto } from './dtos/get-question-response.dto';
-import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
-import { Role } from 'src/auth/decorator/role.decorator';
-import { RoleType } from 'src/auth/enums/role-type.enum';
-import { ActiveUser } from 'src/auth/decorator/active-user.decorator';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
+import { RoleType } from 'src/auth/enums/role-type.enum';
 
 @Controller('questions')
 @ApiTags('Questions')
