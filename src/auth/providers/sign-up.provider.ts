@@ -1,5 +1,6 @@
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigType } from '@nestjs/config';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
@@ -11,6 +12,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 
+import jwtConfig from '../config/jwt.config';
 import { UsersService } from 'src/users/providers/users.service';
 import { GenerateTokensProvider } from './generate-tokens.provider';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
@@ -40,7 +42,13 @@ export class SignUpProvider {
      * Inject Redis
      */
     @InjectRedis()
-    private readonly redis: Redis
+    private readonly redis: Redis,
+
+    /**
+     * Inject jwtConfiguration
+     */
+    @Inject(jwtConfig.KEY)
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
   ) {}
 
   public async signUp(
@@ -62,13 +70,13 @@ export class SignUpProvider {
         `user:${user.id}:accessToken`,
         accessToken,
         'EX',
-        3600
+        this.jwtConfiguration.accessTokenTtl
       );
       await this.redis.set(
         `user:${user.id}:refreshToken`,
         refreshToken,
         'EX',
-        86400
+        this.jwtConfiguration.refreshTokenTtl
       );
 
       return { accessToken, refreshToken };

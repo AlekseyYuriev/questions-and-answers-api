@@ -47,6 +47,12 @@ export class AccessTokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
+    // Check if the token is blacklisted
+    const isBlacklisted = await this.redis.get(`blacklist:${token}`);
+    if (isBlacklisted) {
+      throw new UnauthorizedException();
+    }
+
     try {
       const payload = await this.jwtService.verifyAsync(
         token,
@@ -59,7 +65,7 @@ export class AccessTokenGuard implements CanActivate {
     }
 
     const redisData = await this.redis.get(
-      `user:${request[REQUEST_USER_KEY].sub}:token`
+      `user:${request[REQUEST_USER_KEY].sub}:accessToken`
     );
 
     if (!redisData) {

@@ -6,6 +6,7 @@ import { SignInDto } from '../dtos/signin.dto';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { SignUpProvider } from './sign-up.provider';
+import { LogoutProvider } from './logout.provider';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,11 @@ export class AuthService {
      * Inject signUpProvider
      */
     private readonly signUpProvider: SignUpProvider,
+
+    /**
+     * Inject logoutProvider
+     */
+    private readonly logoutProvider: LogoutProvider,
 
     /**
      * Inject refreshTokensProvider
@@ -36,6 +42,10 @@ export class AuthService {
     signUpDto: CreateUserDto
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return await this.signUpProvider.signUp(signUpDto);
+  }
+
+  public async logout(refreshTokenDto: RefreshTokenDto) {
+    return await this.logoutProvider.logout(refreshTokenDto);
   }
 
   public async refreshTokens(
