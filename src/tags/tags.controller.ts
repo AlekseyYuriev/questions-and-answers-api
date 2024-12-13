@@ -33,6 +33,8 @@ export class TagsController {
     private readonly TagsService: TagsService
   ) {}
 
+  @Role(RoleType.Admin)
+  @UseGuards(AuthenticationGuard)
   @Post()
   @ApiOperation({
     summary: 'Creates a new tag',
@@ -50,6 +52,8 @@ export class TagsController {
     return this.TagsService.createTag(createTagDto);
   }
 
+  @Role(RoleType.Admin)
+  @UseGuards(AuthenticationGuard)
   @Delete()
   @ApiOperation({
     summary: 'Delete an existing tag',

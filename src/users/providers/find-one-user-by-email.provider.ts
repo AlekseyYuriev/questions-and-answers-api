@@ -1,11 +1,13 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   Injectable,
   RequestTimeoutException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+
 import { User } from '../user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class FindOneUserByEmailProvider {

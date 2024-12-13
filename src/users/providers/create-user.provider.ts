@@ -1,3 +1,6 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   BadRequestException,
   forwardRef,
@@ -5,13 +8,12 @@ import {
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { User } from '../user.entity';
-import { roleType } from 'src/roles/enums/roleType';
-import { Repository } from 'typeorm';
+
 import { RolesService } from 'src/roles/providers/roles.service';
-import { InjectRepository } from '@nestjs/typeorm';
 import { HashingProvider } from 'src/auth/providers/hashing.provider';
+import { User } from '../user.entity';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { roleType } from 'src/roles/enums/roleType';
 
 @Injectable()
 export class CreateUserProvider {

@@ -18,12 +18,12 @@ import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 export class QuestionsService {
   constructor(
     /**
-     * Inject UsersService
+     * Inject Users Service
      */
     private readonly usersService: UsersService,
 
     /**
-     * Inject TagsService
+     * Inject Tags Service
      */
     private readonly tagsService: TagsService,
 
@@ -34,9 +34,9 @@ export class QuestionsService {
     private readonly questionsRepository: Repository<Question>,
 
     /**
-     * Inject CreateQuestionProvider
+     * Inject createQuestionProvider
      */
-    private readonly CreateQuestionProvider: CreateQuestionProvider
+    private readonly createQuestionProvider: CreateQuestionProvider
   ) {}
 
   /**
@@ -46,7 +46,7 @@ export class QuestionsService {
     createQuestionDto: CreateQuestionDto,
     user: ActiveUserData
   ): Promise<Question> {
-    return await this.CreateQuestionProvider.create(createQuestionDto, user);
+    return await this.createQuestionProvider.create(createQuestionDto, user);
   }
 
   /**

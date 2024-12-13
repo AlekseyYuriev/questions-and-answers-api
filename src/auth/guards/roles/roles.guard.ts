@@ -68,7 +68,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const redisData = await this.redis.get(
-      `user:${request[REQUEST_USER_KEY].sub}:token`
+      `user:${request[REQUEST_USER_KEY].sub}:accessToken`
     );
 
     if (!redisData) {

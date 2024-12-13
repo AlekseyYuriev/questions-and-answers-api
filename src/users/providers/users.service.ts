@@ -1,21 +1,20 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
   BadRequestException,
   forwardRef,
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
-import { GetUsersParamDto } from '../dtos/get-users-param.dto';
-import { Repository } from 'typeorm';
-import { User } from '../user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from '../dtos/create-user.dto';
+
 import { RolesService } from 'src/roles/providers/roles.service';
 import { AuthService } from 'src/auth/providers/auth.service';
 import { CreateUserProvider } from './create-user.provider';
 import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
+import { User } from '../user.entity';
+import { CreateUserDto } from '../dtos/create-user.dto';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -59,29 +58,6 @@ export class UsersService {
   }
 
   /**
-   * Public method responsible for handling GET request for '/users' endpoint
-   */
-  public async findAll(
-    getUserParamDto: GetUsersParamDto,
-    limit: number,
-    page: number
-  ): Promise<HttpException> {
-    throw new HttpException(
-      {
-        status: HttpStatus.MOVED_PERMANENTLY,
-        error: 'The API endpoint does not exist.',
-        fileName: 'users.service.ts',
-        lineNumber: 91,
-      },
-      HttpStatus.MOVED_PERMANENTLY,
-      {
-        cause: new Error(),
-        description: 'Occured because the API endpoint was permanently moved.',
-      }
-    );
-  }
-
-  /**
    * Public method used to find one user using the ID of the user
    */
   public async findOneById(id: string): Promise<User> {
@@ -108,6 +84,9 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Public method used to find one user using the email of the user
+   */
   public async findOneByEmail(email: string): Promise<User> {
     return await this.findOneUserByEmailProvider.findOneByEmail(email);
   }
