@@ -1,13 +1,20 @@
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from '@nestjs-modules/ioredis';
-import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 
 import appConfig from '../config/application/app.config';
 import databaseConfig from '../config/typeOrm/database.config';
 import environmentValidation from '../config/environment.validation';
 import { TypeOrmConfigService } from '../config/typeOrm/typeOrmConfigService';
 import { RedisConfigService } from '../config/redis/redisConfigService';
+import jwtConfig from 'src/config/jwt/jwt.config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,6 +24,7 @@ import { QuestionsModule } from './modules/questions/questions.module';
 import { AnswersModule } from './modules/answers/answers.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AuthMiddleware } from 'src/shared/middleware/auth/auth.middleware';
 
 const ENV = process.env.NODE_ENV;
 
@@ -40,8 +48,20 @@ const ENV = process.env.NODE_ENV;
     TagsModule,
     RolesModule,
     AuthModule,
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude(
+        { path: 'auth/sign-in', method: RequestMethod.ALL },
+        { path: 'auth/sign-up', method: RequestMethod.ALL }
+      )
+      .forRoutes('*');
+  }
+}

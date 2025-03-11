@@ -1,19 +1,17 @@
-import Redis from 'ioredis';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigType } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
 
-import { Request } from 'express';
 import {
   CanActivate,
   ExecutionContext,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 
-import jwtConfig from 'src/config/jwt/jwt.config';
-import { REQUEST_USER_KEY } from 'src/shared/auth/constants/auth.constants';
+import { RoleType } from 'src/shared/auth/enums/role-type.enum';
+import {
+  REQUEST_USER_KEY,
+  ROLE_TYPE_KEY,
+} from 'src/shared/auth/constants/auth.constants';
 
 /**
  * Guard to handle role-based access control in the application.
@@ -22,85 +20,52 @@ import { REQUEST_USER_KEY } from 'src/shared/auth/constants/auth.constants';
 @Injectable()
 export class RolesGuard implements CanActivate {
   /**
+   * The default role type assigned when no roles are explicitly specified.
+   * Defaults to `RoleType.User`.
+   */
+  private static readonly defaultRoleType = RoleType.User;
+
+  /**
    * Creates an instance of RolesGuard.
-   * @param jwtService - The service for handling JWT operations.
-   * @param jwtConfiguration - The JWT configuration settings.
-   * @param redis - The Redis client for caching tokens.
+   * @param reflector - The reflector instance for accessing metadata from decorators.
    */
   constructor(
     /**
-     * Inject jwtService
+     * Injects the Reflector service to retrieve metadata.
      */
-    private readonly jwtService: JwtService,
-
-    /**
-     * Inject jwtConfiguration
-     */
-    @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
-
-    /**
-     * Inject Redis
-     */
-    @InjectRedis() private readonly redis: Redis
+    private readonly reflector: Reflector
   ) {}
 
   /**
-   * Determines whether the current user has the necessary role to access the resource.
+   * Determines whether the current user has the required role to access the resource.
+   * Allows access if the `User` role is included in the required roles or if the user has the `Admin` role.
    * @param context - The execution context containing the request and response objects.
-   * @returns A promise that resolves to a boolean indicating whether the user can activate the route.
-   * @throws UnauthorizedException If the token is missing, invalid, or the user does not have the required role.
+   * @returns A promise that resolves to a boolean indicating whether the user can access the route.
+   * @throws UnauthorizedException If the user lacks the `Admin` role when required.
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const token = this.extractRequestFromHeader(request);
+    // Retrieve required role types from metadata, defaulting to `RoleType.User`
+    const roleTypes = this.reflector.getAllAndOverride(ROLE_TYPE_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]) ?? [RolesGuard.defaultRoleType];
 
-    if (!token) {
-      throw new UnauthorizedException();
+    // Allow access if User role is explicitly included
+    if (roleTypes.includes(RoleType.User)) {
+      return true;
     }
 
-    try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        this.jwtConfiguration
+    // Check if user object exists and has the Admin role
+    const user = request[REQUEST_USER_KEY];
+
+    if (!user || user.role !== RoleType.Admin) {
+      throw new UnauthorizedException(
+        'You do not have permission to access this resource'
       );
-
-      if (payload.role !== 'admin') {
-        throw new UnauthorizedException(
-          'You do not have permission to access this resource'
-        );
-      }
-
-      request[REQUEST_USER_KEY] = payload;
-    } catch (error) {
-      if (
-        error instanceof UnauthorizedException &&
-        error.message === 'You do not have permission to access this resource'
-      ) {
-        throw new UnauthorizedException(error.message);
-      }
-      throw new UnauthorizedException();
-    }
-
-    const redisData = await this.redis.get(
-      `user:${request[REQUEST_USER_KEY].sub}:accessToken`
-    );
-
-    if (!redisData) {
-      throw new UnauthorizedException('Redis exception');
     }
 
     return true;
-  }
-
-  /**
-   * Extracts the token from the request headers.
-   * @param request - The HTTP request object.
-   * @returns The token string if present, otherwise undefined.
-   */
-  private extractRequestFromHeader(request: Request): string | undefined {
-    const [_, token] = request.headers.authorization?.split(' ') ?? [];
-    return token;
   }
 }

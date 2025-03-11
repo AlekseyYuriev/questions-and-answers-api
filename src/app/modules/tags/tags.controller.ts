@@ -19,8 +19,9 @@ import {
 } from '@nestjs/common';
 
 import { TagsService } from './providers/tags.service';
-import { AuthenticationGuard } from 'src/shared/auth/guards/authentication/authentication.guard';
 import { Role } from 'src/shared/auth/decorator/role.decorator';
+import { RolesGuard } from 'src/shared/auth/guards/roles/roles.guard';
+
 import { Tag } from './tag.entity';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { CreateTagResponseDto } from './dtos/create-tag-response.dto';
@@ -28,6 +29,8 @@ import { RoleType } from 'src/shared/auth/enums/role-type.enum';
 
 @Controller('tags')
 @ApiTags('Tags')
+@Role(RoleType.Admin)
+@UseGuards(RolesGuard)
 export class TagsController {
   constructor(
     /**
@@ -39,8 +42,6 @@ export class TagsController {
   /**
    * Public method responsible for creating a new tag
    */
-  @Role(RoleType.Admin)
-  @UseGuards(AuthenticationGuard)
   @Post()
   @ApiOperation({
     summary: 'Creates a new tag',
@@ -59,8 +60,6 @@ export class TagsController {
     return this.TagsService.createTag(createTagDto);
   }
 
-  @Role(RoleType.Admin)
-  @UseGuards(AuthenticationGuard)
   @Delete()
   @ApiOperation({
     summary: 'Delete an existing tag',
@@ -73,8 +72,6 @@ export class TagsController {
     return this.TagsService.delete(id);
   }
 
-  @Role(RoleType.Admin)
-  @UseGuards(AuthenticationGuard)
   @Get()
   @ApiOperation({
     summary: 'Fetches a list of published tags on the application',

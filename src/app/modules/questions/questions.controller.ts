@@ -26,7 +26,6 @@ import {
 } from '@nestjs/common';
 
 import { QuestionsService } from './providers/questions.service';
-import { AccessTokenGuard } from 'src/shared/auth/guards/access-token/access-token.guard';
 import { Role } from 'src/shared/auth/decorator/role.decorator';
 import { ActiveUser } from 'src/shared/auth/decorator/active-user.decorator';
 import { Question } from './question.entity';
@@ -37,6 +36,7 @@ import { CreateQuestionResponseDto } from './dtos/create-question-response.dto';
 import { GetQuestionResponseDto } from './dtos/get-question-response.dto';
 import { ActiveUserData } from 'src/shared/auth/interfaces/active-user-data.interface';
 import { RoleType } from 'src/shared/auth/enums/role-type.enum';
+import { RolesGuard } from 'src/shared/auth/guards/roles/roles.guard';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -48,7 +48,6 @@ export class QuestionsController {
     private readonly questionsService: QuestionsService
   ) {}
 
-  @UseGuards(AccessTokenGuard)
   @Post()
   @ApiOperation({
     summary: 'Creates a new question',
@@ -80,8 +79,6 @@ export class QuestionsController {
     return this.questionsService.create(createQuestionDto, user);
   }
 
-  @UseGuards(AccessTokenGuard)
-  @Role(RoleType.User)
   @Get('/:id?')
   @ApiOperation({
     summary: 'Fetches a list of published questions on the application',
@@ -131,6 +128,8 @@ export class QuestionsController {
     return this.questionsService.findAll(getQuestionsParamDto, limit, page);
   }
 
+  @Role(RoleType.Admin)
+  @UseGuards(RolesGuard)
   @Patch()
   @ApiOperation({
     summary: 'Updates an existing question',
@@ -160,6 +159,8 @@ export class QuestionsController {
     return this.questionsService.update(patchQuestionDto);
   }
 
+  @Role(RoleType.Admin)
+  @UseGuards(RolesGuard)
   @Delete()
   @ApiOperation({
     summary: 'Deletes an existing question',

@@ -18,7 +18,6 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from './providers/auth.service';
-import { AccessTokenGuard } from '../../../shared/auth/guards/access-token/access-token.guard';
 import { SignInDto } from './dtos/signin.dto';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import { CreateUserDto } from 'src/app/modules/users/dtos/create-user.dto';
@@ -130,7 +129,6 @@ export class AuthController {
    * @throws `UnauthorizedException` if the refresh token is invalid.
    * @throws `RequestTimeoutException` if the database connection fails.
    */
-  @UseGuards(AccessTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
