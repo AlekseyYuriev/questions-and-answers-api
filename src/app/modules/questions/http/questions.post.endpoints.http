@@ -1,0 +1,10 @@
+POST http://localhost:3000/questions
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTU4OTk2NS1jOTYyLTRjY2QtYTM2Ny0yMGY1NGRlNGQwMGYiLCJlbWFpbCI6ImFuZ2VsaW5hQGpvbGllLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0MTY4NDUyMCwiZXhwIjoxNzQxNjg4MTIwLCJhdWQiOiJsb2NhbGhvc3Q6MzAwMCIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.RCdmYf7F9ZsoYVrgSto-jAptbX5GHW_rIlH6wRKgOts
+
+{
+  "rating": 0,
+  "title": "New question TypeOrm 4",
+  "description": "Question description for test with user from request",
+  "tags": ["69341744-a9ed-4646-b9cd-754127a6524a","3605b855-b433-445d-832d-7272ce7d57c3"]
+}
