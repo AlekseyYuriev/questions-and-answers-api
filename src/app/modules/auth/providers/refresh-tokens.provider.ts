@@ -6,7 +6,6 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
 import {
-  forwardRef,
   HttpException,
   HttpStatus,
   Inject,
@@ -17,24 +16,27 @@ import {
 import jwtConfig from '../../../../config/jwt/jwt.config';
 import { GenerateTokensProvider } from './generate-tokens.provider';
 import { UsersService } from 'src/app/modules/users/providers/users.service';
+
 import { ActiveUserData } from '../../../../shared/auth/interfaces/active-user-data.interface';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { RefreshToken } from '../refresh-token.entity';
 
 /**
- * The `RefreshTokensProvider` is responsible for handling token refresh operations,
- * generating new tokens, and managing refresh token storage.
+ * Handles token refresh operations by verifying refresh tokens, generating new access
+ * and refresh tokens, and managing their storage in the database and Redis cache.
+ * @class
  */
 @Injectable()
 export class RefreshTokensProvider {
   /**
-   * Creates an instance of RefreshTokensProvider.
-   * @param jwtService - The service for handling JWT operations.
-   * @param jwtConfiguration - The JWT configuration settings.
-   * @param refreshTokenRepository - The repository for managing refresh tokens in the database.
-   * @param generateTokensProvider - The provider for generating access and refresh tokens.
-   * @param usersService - The service for managing user-related operations.
-   * @param redis - The Redis client for caching tokens.
+   * Initializes the RefreshTokensProvider with required dependencies.
+   * @constructor
+   * @param {JwtService} jwtService - Service for handling JWT operations like signing and verification.
+   * @param {ConfigType<typeof jwtConfig>} jwtConfiguration - Configuration settings for JWT, including secret, audience, and issuer.
+   * @param {Repository<RefreshToken>} refreshTokenRepository - Repository for managing refresh tokens in the database.
+   * @param {GenerateTokensProvider} generateTokensProvider - Provider for generating access and refresh tokens.
+   * @param {UsersService} usersService - Service for managing user-related operations, such as retrieving user data.
+   * @param {Redis} redis - Redis client instance for caching tokens.
    */
   constructor(
     /**
@@ -62,7 +64,6 @@ export class RefreshTokensProvider {
     /**
      * Inject usersService
      */
-    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
 
     /**
@@ -73,13 +74,13 @@ export class RefreshTokensProvider {
   ) {}
 
   /**
-   * Refreshes authentication tokens using the provided refresh token,
-   * updates the refresh token in both the database and Redis cache.
+   * Refreshes authentication tokens by validating the provided refresh token, generating new tokens,
+   * and updating their storage in both the database and Redis cache.
    *
-   * @param refreshTokenDto - The data transfer object containing the refresh token.
-   * @returns A promise that resolves to an object containing the new access token and refresh token.
-   * @throws UnauthorizedException If the refresh token is not found or invalid.
-   * @throws HttpException If an error occurs during token verification, user retrieval, or token storage.
+   * @param {RefreshTokenDto} refreshTokenDto - Data transfer object containing the refresh token to validate.
+   * @returns {Promise<{ accessToken: string; refreshToken: string }>} A promise resolving to an object with the new access and refresh tokens.
+   * @throws {UnauthorizedException} If the refresh token is not found in the database or is invalid.
+   * @throws {HttpException} If token verification fails, user retrieval fails, or there’s an error storing tokens in the database or Redis.
    */
   public async refreshTokens(
     refreshTokenDto: RefreshTokenDto
@@ -114,13 +115,13 @@ export class RefreshTokensProvider {
         `user:${user.id}:accessToken`,
         accessToken,
         'EX',
-        3600
+        3600 // 1 hour TTL
       );
       await this.redis.set(
         `user:${user.id}:refreshToken`,
         refreshToken,
         'EX',
-        86400
+        86400 // 24 hours TTL
       );
 
       return { accessToken, refreshToken };

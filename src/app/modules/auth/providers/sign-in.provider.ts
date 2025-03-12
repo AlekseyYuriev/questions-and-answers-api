@@ -5,7 +5,6 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
 import {
-  forwardRef,
   Inject,
   Injectable,
   RequestTimeoutException,
@@ -14,39 +13,40 @@ import {
 
 import jwtConfig from '../../../../config/jwt/jwt.config';
 import { UsersService } from 'src/app/modules/users/providers/users.service';
+import { BcryptProvider } from 'src/shared/libs/bcrypt.provider';
 import { GenerateTokensProvider } from './generate-tokens.provider';
-import { HashingProvider } from '../../../../shared/libs/hashing.provider';
+
 import { User } from 'src/app/modules/users/user.entity';
 import { RefreshToken } from '../refresh-token.entity';
 import { SignInDto } from '../dtos/signin.dto';
 
 /**
- * The `SignInProvider` is responsible for handling user authentication
- * by verifying credentials, generating tokens, and managing refresh token storage.
+ * Handles user authentication by verifying credentials, generating tokens,
+ * and managing refresh token storage in the database and Redis cache.
+ * @class
  */
 @Injectable()
 export class SignInProvider {
   /**
-   * Creates an instance of SignInProvider.
-   * @param usersService The service for managing user-related operations.
-   * @param hashingProvider The provider for hashing and comparing passwords.
-   * @param generateTokensProvider The provider for generating access and refresh tokens.
-   * @param refreshTokenRepository The repository for managing refresh tokens in the database.
-   * @param redis The Redis client for caching tokens.
-   * @param jwtConfiguration The JWT configuration settings.
+   * Initializes the SignInProvider with required dependencies.
+   * @constructor
+   * @param {UsersService} usersService - Service for managing user-related operations, such as finding users by email.
+   * @param {BcryptProvider} bcryptProvider - Provider for password hashing and comparison using bcrypt.
+   * @param {GenerateTokensProvider} generateTokensProvider - Provider for generating access and refresh tokens.
+   * @param {Repository<RefreshToken>} refreshTokenRepository - Repository for managing refresh tokens in the database.
+   * @param {Redis} redis - Redis client instance for caching tokens.
+   * @param {ConfigType<typeof jwtConfig>} jwtConfiguration - Configuration settings for JWT, including token TTLs.
    */
   constructor(
     /**
      * Inject usersService
      */
-    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
 
     /**
-     * Inject hashingProvider
+     * Inject bcryptProvider
      */
-    private readonly hashingProvider: HashingProvider,
-
+    private readonly bcryptProvider: BcryptProvider,
     /**
      * Inject generateTokensProvider
      */
@@ -72,13 +72,13 @@ export class SignInProvider {
   ) {}
 
   /**
-   * Authenticates a user based on the provided credentials, generates tokens,
-   * and updates the refresh token in both the database and Redis cache.
+   * Authenticates a user by verifying their credentials, generates access and refresh tokens,
+   * and stores the refresh token in both the database and Redis cache.
    *
-   * @param signInDto The user credentials for signing in.
-   * @returns A promise that resolves to an object containing the access token and refresh token.
-   * @throws UnauthorizedException If the password is incorrect.
-   * @throws RequestTimeoutException If there is an error during password comparison or database access.
+   * @param {SignInDto} signInDto - Data transfer object containing the user's email and password.
+   * @returns {Promise<{ accessToken: string; refreshToken: string }>} A promise resolving to an object containing the access and refresh tokens.
+   * @throws {UnauthorizedException} If the provided password is incorrect.
+   * @throws {RequestTimeoutException} If there’s an error during password comparison, database operations, or Redis caching.
    */
   public async signIn(
     signInDto: SignInDto
@@ -88,7 +88,7 @@ export class SignInProvider {
     let isEqual: boolean = false;
 
     try {
-      isEqual = await this.hashingProvider.comparePassword(
+      isEqual = await this.bcryptProvider.comparePassword(
         signInDto.password,
         user.password
       );

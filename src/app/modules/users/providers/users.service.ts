@@ -3,36 +3,31 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
 
-import { RolesService } from 'src/app/modules/roles/providers/roles.service';
-import { AuthService } from 'src/app/modules/auth/providers/auth.service';
 import { CreateUserProvider } from './create-user.provider';
 import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
+
 import { User } from '../user.entity';
 import { CreateUserDto } from '../dtos/create-user.dto';
 
 /**
- * Class to connect to Users table and perform business operations
+ * Service responsible for managing user-related operations, such as creating and retrieving users,
+ * by interacting with the Users table and delegating specific tasks to specialized providers.
+ * @class
  */
 @Injectable()
 export class UsersService {
+  /**
+   * Initializes the UsersService with required dependencies.
+   * @constructor
+   * @param {Repository<User>} usersRepository - Repository for performing CRUD operations on the Users table.
+   * @param {CreateUserProvider} createUserProvider - Provider for handling user creation logic.
+   * @param {FindOneUserByEmailProvider} findOneUserByEmailProvider - Provider for retrieving a user by email.
+   */
   constructor(
-    /**
-     * Inject Auth Service
-     */
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
-
-    /**
-     * Inject Roles Service
-     */
-    private readonly rolesService: RolesService,
-
     /**
      * Injecting usersRepository
      */
@@ -51,14 +46,24 @@ export class UsersService {
   ) {}
 
   /**
-   * Public method responsible for creating a new user
+   * Creates a new user based on the provided details by delegating to the CreateUserProvider.
+   *
+   * @param {CreateUserDto} createUserDto - Data transfer object containing user details (e.g., email, password).
+   * @returns {Promise<User>} A promise resolving to the newly created user entity.
+   * @throws {BadRequestException} If a user with the same email already exists or input is invalid.
+   * @throws {RequestTimeoutException} If there’s an error connecting to the database during creation.
    */
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     return this.createUserProvider.createUser(createUserDto);
   }
 
   /**
-   * Public method used to find one user using the ID of the user
+   * Retrieves a user by their ID, including their associated role.
+   *
+   * @param {string} id - The unique identifier of the user to retrieve.
+   * @returns {Promise<User>} A promise resolving to the user entity with role details.
+   * @throws {BadRequestException} If no user exists with the provided ID.
+   * @throws {RequestTimeoutException} If there’s an error connecting to the database during retrieval.
    */
   public async findOneById(id: string): Promise<User> {
     let user = undefined;
@@ -85,7 +90,12 @@ export class UsersService {
   }
 
   /**
-   * Public method used to find one user using the email of the user
+   * Retrieves a user by their email by delegating to the FindOneUserByEmailProvider.
+   *
+   * @param {string} email - The email address of the user to retrieve.
+   * @returns {Promise<User>} A promise resolving to the user entity.
+   * @throws {BadRequestException} If no user exists with the provided email.
+   * @throws {RequestTimeoutException} If there’s an error connecting to the database during retrieval.
    */
   public async findOneByEmail(email: string): Promise<User> {
     return await this.findOneUserByEmailProvider.findOneByEmail(email);

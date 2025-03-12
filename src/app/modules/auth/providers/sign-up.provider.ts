@@ -4,39 +4,35 @@ import { ConfigType } from '@nestjs/config';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
 import jwtConfig from '../../../../config/jwt/jwt.config';
 import { UsersService } from 'src/app/modules/users/providers/users.service';
 import { GenerateTokensProvider } from './generate-tokens.provider';
-import { CreateUserDto } from 'src/app/modules/users/dtos/create-user.dto';
+
 import { RefreshToken } from '../refresh-token.entity';
+import { CreateUserDto } from 'src/app/modules/users/dtos/create-user.dto';
 
 /**
- * The `SignUpProvider` is responsible for handling user registration,
- * generating authentication tokens, and managing refresh token storage.
+ * Handles user registration by creating a new user, generating authentication tokens,
+ * and managing refresh token storage in the database and Redis cache.
+ * @class
  */
 @Injectable()
 export class SignUpProvider {
   /**
-   * Creates an instance of SignUpProvider.
-   * @param usersService - The service for managing user-related operations.
-   * @param generateTokensProvider - The provider for generating access and refresh tokens.
-   * @param refreshTokenRepository - The repository for managing refresh tokens in the database.
-   * @param redis - The Redis client for caching tokens.
-   * @param jwtConfiguration - The JWT configuration settings.
+   * Initializes the SignUpProvider with required dependencies.
+   * @constructor
+   * @param {UsersService} usersService - Service for managing user-related operations, such as creating users.
+   * @param {GenerateTokensProvider} generateTokensProvider - Provider for generating access and refresh tokens.
+   * @param {Repository<RefreshToken>} refreshTokenRepository - Repository for managing refresh tokens in the database.
+   * @param {Redis} redis - Redis client instance for caching tokens.
+   * @param {ConfigType<typeof jwtConfig>} jwtConfiguration - Configuration settings for JWT, including token TTLs.
    */
   constructor(
     /**
      * Inject usersService
      */
-    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
 
     /**
@@ -64,12 +60,12 @@ export class SignUpProvider {
   ) {}
 
   /**
-   * Registers a new user, generates authentication tokens,
-   * and updates the refresh token in both the database and Redis cache.
+   * Registers a new user with the provided details, generates access and refresh tokens,
+   * and stores the refresh token in both the database and Redis cache.
    *
-   * @param signUpDto - The data transfer object containing user registration details.
-   * @returns A promise that resolves to an object containing the access token and refresh token.
-   * @throws HttpException If an error occurs during user creation, token generation, or database access.
+   * @param {CreateUserDto} signUpDto - Data transfer object containing user registration details (e.g., email, password).
+   * @returns {Promise<{ accessToken: string; refreshToken: string }>} A promise resolving to an object containing the access and refresh tokens.
+   * @throws {HttpException} If an error occurs during user creation, token generation, database operations, or Redis caching.
    */
   public async signUp(
     signUpDto: CreateUserDto
