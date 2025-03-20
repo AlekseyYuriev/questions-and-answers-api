@@ -2,8 +2,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
 
 import {
   HttpException,
@@ -17,19 +15,22 @@ import jwtConfig from '../../../../config/jwt/jwt.config';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { ActiveUserData } from '../../../../shared/auth/interfaces/active-user-data.interface';
 import { RefreshToken } from '../refresh-token.entity';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 /**
- * The `LogoutProvider` is responsible for handling user logout operations,
- * verifying the refresh token, blacklisting the access token, and deleting the refresh token.
+ * Handles user logout operations by verifying refresh tokens and deleting them from the database.
+ * @class
  */
 @Injectable()
 export class LogoutProvider {
   /**
-   * Creates an instance of LogoutProvider.
-   * @param jwtService - The service for handling JWT operations.
-   * @param jwtConfiguration - The JWT configuration settings.
-   * @param refreshTokenRepository - The repository for managing refresh tokens in the database.
-   * @param redis - The Redis client for caching tokens.
+   * Initializes the LogoutProvider with required dependencies.
+   * @constructor
+   * @param {JwtService} jwtService - Service for handling JWT operations, such as token verification.
+   * @param {ConfigType<typeof jwtConfig>} jwtConfiguration - Configuration settings for JWT, including secret, audience, and issuer.
+   * @param {Repository<RefreshToken>} refreshTokenRepository - Repository for managing refresh tokens in the database.
+   * @param {Redis} redis - The Redis client for caching tokens.
    */
   constructor(
     /**
@@ -57,13 +58,12 @@ export class LogoutProvider {
   ) {}
 
   /**
-   * Logs out a user by verifying the provided refresh token,
-   * blacklisting the access token, and deleting the refresh token from the database.
+   * Logs out a user by verifying the provided refresh token and deleting it from the database.
    *
-   * @param refreshTokenDto - The data transfer object containing the refresh token.
-   * @returns A promise that resolves to an object containing a success message.
-   * @throws UnauthorizedException If the refresh token is not found or invalid.
-   * @throws HttpException If an error occurs during token verification, token retrieval, or token deletion.
+   * @param {RefreshTokenDto} refreshTokenDto - Data transfer object containing the refresh token to validate.
+   * @returns {Promise<{ message: string }>} A promise resolving to an object with a success message.
+   * @throws {UnauthorizedException} If the refresh token is invalid or not found in the database.
+   * @throws {HttpException} If an error occurs during token verification or database operations.
    */
   public async logout(
     refreshTokenDto: RefreshTokenDto
@@ -85,19 +85,14 @@ export class LogoutProvider {
         throw new UnauthorizedException();
       }
 
-      const accessToken = await this.redis.get(`user:${sub}:accessToken`);
+      const refreshToken = await this.redis.get(`user:${sub}:refreshToken`);
 
-      if (!accessToken) {
+      if (!refreshToken) {
         throw new UnauthorizedException();
       }
 
-      await this.redis.set(
-        `blacklist:${accessToken}`,
-        'true',
-        'EX',
-        this.jwtConfiguration.accessTokenTtl
-      );
-
+      await this.redis.del(`user:${sub}:accessToken`);
+      await this.redis.del(`user:${sub}:refreshToken`);
       await this.refreshTokenRepository.delete(refreshTokenEntity.id);
 
       return { message: 'Successfully logged out' };
