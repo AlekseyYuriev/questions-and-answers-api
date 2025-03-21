@@ -5,7 +5,8 @@ import { RoleType } from 'src/shared/auth/enums/role-type.enum';
 export class CreateRoleDto {
   @ApiProperty({
     enum: RoleType,
-    description: "Possible values: 'user', 'admin'",
+    description:
+      "The role type. Possible values are 'Admin' and 'User' from the RoleType enum.",
   })
   @IsEnum(RoleType)
   @IsNotEmpty()
