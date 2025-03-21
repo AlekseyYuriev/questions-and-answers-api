@@ -1,10 +1,3 @@
-import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigType } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
-
 import {
   HttpException,
   HttpStatus,
@@ -12,24 +5,33 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigType } from '@nestjs/config';
+
+import { Repository } from 'typeorm';
+import { Request, Response } from 'express';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 import jwtConfig from '../../../../config/jwt/jwt.config';
+import { ActiveUserData } from '../../../../shared/auth/interfaces/active-user-data.interface';
+import { RefreshToken } from '../refresh-token.entity';
+import { AuthTokenResponseDto } from '../dtos/auth-token-response.dto';
+
 import { GenerateTokensProvider } from './generate-tokens.provider';
 import { UsersService } from 'src/app/modules/users/providers/users.service';
 
-import { ActiveUserData } from '../../../../shared/auth/interfaces/active-user-data.interface';
-import { RefreshTokenDto } from '../dtos/refresh-token.dto';
-import { RefreshToken } from '../refresh-token.entity';
-
 /**
- * Handles token refresh operations by verifying refresh tokens, generating new access
- * and refresh tokens, and managing their storage in the database and Redis cache.
- * @class
+ * @description
+ * This provider handles the refresh token mechanism by validating existing refresh tokens,
+ * generating new access and refresh tokens, and updating their storage in the database and Redis.
+ *
+ * @class RefreshTokensProvider
  */
 @Injectable()
 export class RefreshTokensProvider {
   /**
-   * Initializes the RefreshTokensProvider with required dependencies.
    * @constructor
    * @param {JwtService} jwtService - Service for handling JWT operations like signing and verification.
    * @param {ConfigType<typeof jwtConfig>} jwtConfiguration - Configuration settings for JWT, including secret, audience, and issuer.
@@ -76,19 +78,28 @@ export class RefreshTokensProvider {
   /**
    * Refreshes authentication tokens by validating the provided refresh token, generating new tokens,
    * and updating their storage in both the database and Redis cache.
+   * Also sets the new refresh token in the response cookies.
    *
-   * @param {RefreshTokenDto} refreshTokenDto - Data transfer object containing the refresh token to validate.
-   * @returns {Promise<{ accessToken: string; refreshToken: string }>} A promise resolving to an object with the new access and refresh tokens.
-   * @throws {UnauthorizedException} If the refresh token is not found in the database or is invalid.
+   * @param {Request} req - The HTTP request object containing the refresh token in cookies.
+   * @param {Response} res - The HTTP response object for setting the new refresh token cookie.
+   * @returns {Promise<AuthTokenResponseDto>} A promise resolving to an object with the new access token.
+   * @throws {UnauthorizedException} If the refresh token is invalid or not found in the database.
    * @throws {HttpException} If token verification fails, user retrieval fails, or there’s an error storing tokens in the database or Redis.
    */
   public async refreshTokens(
-    refreshTokenDto: RefreshTokenDto
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+    req: Request,
+    res: Response
+  ): Promise<AuthTokenResponseDto> {
     try {
+      const refreshToken = req.cookies?.refreshToken;
+
+      if (!refreshToken) {
+        throw new UnauthorizedException('Refresh token is missing.');
+      }
+
       const { sub } = await this.jwtService.verifyAsync<
         Pick<ActiveUserData, 'sub'>
-      >(refreshTokenDto.refreshToken, {
+      >(refreshToken, {
         secret: this.jwtConfiguration.secret,
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,
@@ -99,16 +110,16 @@ export class RefreshTokensProvider {
         relations: ['user'],
       });
 
-      if (!refreshTokenEntity) {
+      if (!refreshTokenEntity || refreshTokenEntity.token !== refreshToken) {
         throw new UnauthorizedException();
       }
 
       const user = await this.usersService.findOneById(sub);
 
-      const { accessToken, refreshToken } =
+      const { accessToken, refreshToken: newRefreshToken } =
         await this.generateTokensProvider.generateTokens(user);
 
-      refreshTokenEntity.token = refreshToken;
+      refreshTokenEntity.token = newRefreshToken;
       await this.refreshTokenRepository.save(refreshTokenEntity);
 
       await this.redis.set(
@@ -119,12 +130,17 @@ export class RefreshTokensProvider {
       );
       await this.redis.set(
         `user:${user.id}:refreshToken`,
-        refreshToken,
+        newRefreshToken,
         'EX',
         86400 // 24 hours TTL
       );
 
-      return { accessToken, refreshToken };
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        maxAge: this.jwtConfiguration.refreshTokenTtl * 1000,
+      });
+
+      return { accessToken };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';

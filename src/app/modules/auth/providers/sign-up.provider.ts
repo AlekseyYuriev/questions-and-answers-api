@@ -1,17 +1,19 @@
-import { Repository } from 'typeorm';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigType } from '@nestjs/config';
+
+import { Repository } from 'typeorm';
+import { Response } from 'express';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-
 import jwtConfig from '../../../../config/jwt/jwt.config';
-import { UsersService } from 'src/app/modules/users/providers/users.service';
-import { GenerateTokensProvider } from './generate-tokens.provider';
-
 import { RefreshToken } from '../refresh-token.entity';
 import { CreateUserDto } from 'src/app/modules/users/dtos/create-user.dto';
+import { AuthTokenResponseDto } from '../dtos/auth-token-response.dto';
+
+import { UsersService } from 'src/app/modules/users/providers/users.service';
+import { GenerateTokensProvider } from './generate-tokens.provider';
 
 /**
  * Handles user registration by creating a new user, generating authentication tokens,
@@ -21,7 +23,6 @@ import { CreateUserDto } from 'src/app/modules/users/dtos/create-user.dto';
 @Injectable()
 export class SignUpProvider {
   /**
-   * Initializes the SignUpProvider with required dependencies.
    * @constructor
    * @param {UsersService} usersService - Service for managing user-related operations, such as creating users.
    * @param {GenerateTokensProvider} generateTokensProvider - Provider for generating access and refresh tokens.
@@ -64,12 +65,14 @@ export class SignUpProvider {
    * and stores the refresh token in both the database and Redis cache.
    *
    * @param {CreateUserDto} signUpDto - Data transfer object containing user registration details (e.g., email, password).
-   * @returns {Promise<{ accessToken: string; refreshToken: string }>} A promise resolving to an object containing the access and refresh tokens.
+   * @param {Response} res - The HTTP response object.
+   * @returns {Promise<AuthTokenResponseDto>} A promise resolving to an object containing the access token.
    * @throws {HttpException} If an error occurs during user creation, token generation, database operations, or Redis caching.
    */
   public async signUp(
-    signUpDto: CreateUserDto
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+    signUpDto: CreateUserDto,
+    res: Response
+  ): Promise<AuthTokenResponseDto> {
     try {
       const user = await this.usersService.createUser(signUpDto);
 
@@ -81,6 +84,11 @@ export class SignUpProvider {
         user: user,
       });
       await this.refreshTokenRepository.save(refreshTokenEntity);
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        maxAge: this.jwtConfiguration.refreshTokenTtl * 1000,
+      });
 
       await this.redis.set(
         `user:${user.id}:accessToken`,
@@ -95,7 +103,7 @@ export class SignUpProvider {
         this.jwtConfiguration.refreshTokenTtl
       );
 
-      return { accessToken, refreshToken };
+      return { accessToken };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';

@@ -1,24 +1,26 @@
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ConfigType } from '@nestjs/config';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
-
 import {
   Inject,
   Injectable,
   RequestTimeoutException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigType } from '@nestjs/config';
+
+import { Repository } from 'typeorm';
+import { Response } from 'express';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 import jwtConfig from '../../../../config/jwt/jwt.config';
-import { UsersService } from 'src/app/modules/users/providers/users.service';
-import { BcryptProvider } from 'src/shared/libs/bcrypt.provider';
-import { GenerateTokensProvider } from './generate-tokens.provider';
-
 import { User } from 'src/app/modules/users/user.entity';
 import { RefreshToken } from '../refresh-token.entity';
 import { SignInDto } from '../dtos/signin.dto';
+import { AuthTokenResponseDto } from '../dtos/auth-token-response.dto';
+
+import { UsersService } from 'src/app/modules/users/providers/users.service';
+import { BcryptProvider } from 'src/shared/libs/bcrypt.provider';
+import { GenerateTokensProvider } from './generate-tokens.provider';
 
 /**
  * Handles user authentication by verifying credentials, generating tokens,
@@ -28,7 +30,6 @@ import { SignInDto } from '../dtos/signin.dto';
 @Injectable()
 export class SignInProvider {
   /**
-   * Initializes the SignInProvider with required dependencies.
    * @constructor
    * @param {UsersService} usersService - Service for managing user-related operations, such as finding users by email.
    * @param {BcryptProvider} bcryptProvider - Provider for password hashing and comparison using bcrypt.
@@ -76,13 +77,15 @@ export class SignInProvider {
    * and stores the refresh token in both the database and Redis cache.
    *
    * @param {SignInDto} signInDto - Data transfer object containing the user's email and password.
-   * @returns {Promise<{ accessToken: string; refreshToken: string }>} A promise resolving to an object containing the access and refresh tokens.
+   * @param {Response} res - The HTTP response object.
+   * @returns {Promise<AuthTokenResponseDto>} A promise resolving to an object containing the access token.
    * @throws {UnauthorizedException} If the provided password is incorrect.
    * @throws {RequestTimeoutException} If there’s an error during password comparison, database operations, or Redis caching.
    */
   public async signIn(
-    signInDto: SignInDto
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+    signInDto: SignInDto,
+    res: Response
+  ): Promise<AuthTokenResponseDto> {
     let user: User = await this.usersService.findOneByEmail(signInDto.email);
 
     let isEqual: boolean = false;
@@ -122,6 +125,11 @@ export class SignInProvider {
         await this.refreshTokenRepository.save(existingRefreshToken);
       }
 
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        maxAge: this.jwtConfiguration.refreshTokenTtl * 1000,
+      });
+
       await this.redis.set(
         `user:${user.id}:accessToken`,
         accessToken,
@@ -140,6 +148,6 @@ export class SignInProvider {
       });
     }
 
-    return { accessToken, refreshToken };
+    return { accessToken };
   }
 }

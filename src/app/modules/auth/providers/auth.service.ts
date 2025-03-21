@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 import { SignInProvider } from './sign-in.provider';
 import { SignUpProvider } from './sign-up.provider';
 import { LogoutProvider } from './logout.provider';
 import { RefreshTokensProvider } from './refresh-tokens.provider';
+
 import { SignInDto } from '../dtos/signin.dto';
-import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { CreateUserDto } from 'src/app/modules/users/dtos/create-user.dto';
+import { AuthTokenResponseDto } from '../dtos/auth-token-response.dto';
 
 /**
- * The `AuthService` is responsible for handling authentication logic.
+ * @description
+ * The `AuthService` handles authentication-related operations by acting as an intermediary
+ * between the controller and authentication providers. It delegates authentication tasks
+ * such as user login, registration, logout, and token refreshing to their respective providers.
  *
- * This service acts as a middle layer between the controller and providers,
- * delegating authentication tasks such as user login, registration, logout,
- * and token refreshing to their respective providers.
+ * @class AuthService
  */
 @Injectable()
 export class AuthService {
@@ -48,62 +51,73 @@ export class AuthService {
   ) {}
 
   /**
-   * Authenticates a user and generates access and refresh tokens.
+   * Authenticates a user and generates authentication tokens.
    *
-   * Delegates the authentication logic to the `SignInProvider`.
+   * This method delegates the authentication logic to `SignInProvider`.
+   * If authentication is successful, it returns an access token in the response body
+   * and stores a refresh token in HTTP-only cookies.
    *
-   * @param signInDto User credentials for signing in.
-   * @returns An object containing access and refresh tokens.
-   * @throws `UnauthorizedException` if the credentials are invalid.
+   * @param {SignInDto} signInDto - User credentials for signing in.
+   * @param {Response} res - The HTTP response object.
+   * @returns {Promise<AuthTokenResponseDto>} An object containing the access token.
+   * @throws {UnauthorizedException} If the credentials are invalid.
    */
   public async signIn(
-    signInDto: SignInDto
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    return await this.signInProvider.signIn(signInDto);
+    signInDto: SignInDto,
+    res: Response
+  ): Promise<AuthTokenResponseDto> {
+    return await this.signInProvider.signIn(signInDto, res);
   }
 
   /**
-   * Registers a new user and generates access and refresh tokens.
+   * Registers a new user and generates authentication tokens.
    *
-   * Delegates the registration logic to the `SignUpProvider`.
+   * This method delegates the registration logic to `SignUpProvider`.
+   * If registration is successful, it returns an access token in the response body
+   * and stores a refresh token in HTTP-only cookies.
    *
-   * @param signUpDto User details for registration.
-   * @returns An object containing access and refresh tokens.
-   * @throws `BadRequestException` if the registration data is invalid.
+   * @param {CreateUserDto} signUpDto - User details for registration.
+   * @param {Response} res - The HTTP response object.
+   * @returns {Promise<AuthTokenResponseDto>} An object containing the access token.
+   * @throws {BadRequestException} If the registration data is invalid.
    */
   public async signUp(
-    signUpDto: CreateUserDto
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    return await this.signUpProvider.signUp(signUpDto);
+    signUpDto: CreateUserDto,
+    res: Response
+  ): Promise<AuthTokenResponseDto> {
+    return await this.signUpProvider.signUp(signUpDto, res);
   }
 
   /**
    * Logs out a user by invalidating their refresh token.
    *
-   * Delegates the logout logic to the `LogoutProvider`.
+   * This method delegates the logout logic to `LogoutProvider`.
+   * It removes the refresh token from the database and clears it from cookies.
    *
-   * @param refreshTokenDto Refresh token to invalidate.
-   * @returns A message confirming the logout operation.
-   * @throws `UnauthorizedException` if the provided refresh token is invalid.
+   * @param {Request} req - The HTTP request object.
+   * @param {Response} res - The HTTP response object.
+   * @returns {Promise<Response>} A response confirming successful logout.
+   * @throws {UnauthorizedException} If the provided refresh token is invalid.
    */
-  public async logout(
-    refreshTokenDto: RefreshTokenDto
-  ): Promise<{ message: string }> {
-    return await this.logoutProvider.logout(refreshTokenDto);
+  public async logout(req: Request, res: Response): Promise<Response> {
+    return await this.logoutProvider.logout(req, res);
   }
 
   /**
-   * Refreshes the access and refresh tokens using a valid refresh token.
+   * Refreshes the authentication tokens using a valid refresh token.
    *
-   * Delegates the token refreshing logic to the `RefreshTokensProvider`.
+   * This method delegates the token refreshing logic to `RefreshTokensProvider`.
+   * If successful, it generates and returns a new access token.
    *
-   * @param refreshTokenDto Valid refresh token for generating new tokens.
-   * @returns An object containing new access and refresh tokens.
-   * @throws `UnauthorizedException` if the refresh token is invalid or expired.
+   * @param {Request} req - The HTTP request object.
+   * @param {Response} res - The HTTP response object.
+   * @returns {Promise<{ accessToken: string }>} An object containing the new access token.
+   * @throws {UnauthorizedException} If the refresh token is invalid or expired.
    */
   public async refreshTokens(
-    refreshTokenDto: RefreshTokenDto
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    return await this.refreshTokensProvider.refreshTokens(refreshTokenDto);
+    req: Request,
+    res: Response
+  ): Promise<{ accessToken: string }> {
+    return await this.refreshTokensProvider.refreshTokens(req, res);
   }
 }
