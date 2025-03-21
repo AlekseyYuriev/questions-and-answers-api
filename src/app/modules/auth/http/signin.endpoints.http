@@ -1,0 +1,18 @@
+POST http://localhost:3000/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "mark@holden.com",
+  "password": "Password789!"
+}
+
+
+
+
+POST http://localhost:3000/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "angelina@jolie.com",
+  "password": "Pass555!"
+}
